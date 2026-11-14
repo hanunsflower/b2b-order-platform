@@ -1,21 +1,12 @@
 import express from 'express';
-import pool from './db.js';
-import authRouter from './routes/auth.js';
+import pool from './db/db.js';
 import { requireAuth, requireRole } from './middleware/auth.js';
-import adminRouter from './routes/admin.js';
-
+import authRouter from './modules/auth/auth.routes.js';
+import adminRouter from './modules/admin/admin.routes.js';
 
 const app = express();
-
-// Middleware
 app.use(express.json());
 
-// Routes
-app.use('/api/auth', authRouter);
-
-app.use('/api/admin', adminRouter);
-
-// Health check
 app.get('/health', async (req, res) => {
   try {
     const result = await pool.query('SELECT now() AS time');
@@ -26,14 +17,16 @@ app.get('/health', async (req, res) => {
   }
 });
 
-const port = process.env.PORT || 3000;
+app.use('/api/auth', authRouter);
+app.use('/api/admin', adminRouter);
 
+// Temporary test routes (we'll remove these later)
 app.get('/api/me', requireAuth, (req, res) => {
   res.json({ user: req.user });
 });
-
 app.get('/api/admin-only', requireAuth, requireRole('admin'), (req, res) => {
   res.json({ message: 'Welcome, admin' });
 });
 
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`API running on http://localhost:${port}`));

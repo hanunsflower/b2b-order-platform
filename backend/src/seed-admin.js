@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import pool from './db.js';
+import pool from './db/db.js';
 
 const email = 'admin@example.com';
 const password = process.env.ADMIN_PASSWORD || 'Admin12345';

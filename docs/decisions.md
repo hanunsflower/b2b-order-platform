@@ -71,3 +71,7 @@
   React on the frontend, so the whole project uses one style.
 - **Trade-off:** Local imports need file extensions, and some older packages
   need a default import.
+
+  Feature-based modules (routes, controller, service per feature) so each feature’s code lives together and the structure scales as orders, payments, and invoices are added.
+
+  feature-based structure, so each feature’s code lives together

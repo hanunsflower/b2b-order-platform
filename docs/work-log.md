@@ -25,3 +25,5 @@
 - Decisions made today: variants, payment reference, pickup/delivery, stock reservation, calculated totals.
 
 Backend skeleton running; /health confirms API-to-database connection.
+
+Built requireAuth and requireRole middleware. Tested: buyer gets 403 on admin route, no token gets 401

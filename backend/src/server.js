@@ -5,6 +5,7 @@ import authRouter from './modules/auth/auth.routes.js';
 import adminRouter from './modules/admin/admin.routes.js';
 import productsRouter from './modules/products/products.routes.js';
 import cartRouter from './modules/cart/cart.routes.js';
+import ordersRouter from './modules/orders/orders.routes.js';
 
 const app = express();
 app.use(express.json());
@@ -23,6 +24,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/orders', ordersRouter);
 
 // Temporary test routes (we'll remove these later)
 app.get('/api/me', requireAuth, (req, res) => {

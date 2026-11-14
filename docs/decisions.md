@@ -41,3 +41,16 @@
 - **Stock timing:** Stock is checked at checkout but only deducted when payment is
   verified. What happens if stock runs out between those two moments? Options to
   evaluate: reserve stock at checkout, or re-check at verification.
+
+  ## Decision 4: Stock reservation
+- **Date:** 2026-11-14
+- **Question:** When should stock be held for an order?
+- **Options considered:**
+  - A. Reserve stock at checkout
+  - B. Deduct stock only when payment is verified
+- **Decision:** A (reserve at checkout)
+- **Why:** A customer should never be told "out of stock" after they have already
+  paid. Reserving at checkout tells the second buyer immediately, before any money
+  is sent.
+- **Trade-off:** Unpaid orders can lock stock, so unpaid orders will be cancelled
+  automatically after a set time (e.g. 24 hours) and the reserve released.

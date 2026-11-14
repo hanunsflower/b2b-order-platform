@@ -54,3 +54,12 @@
   is sent.
 - **Trade-off:** Unpaid orders can lock stock, so unpaid orders will be cancelled
   automatically after a set time (e.g. 24 hours) and the reserve released.
+
+  ## Decision 5: Order total
+- **Date:** 2026-11-14
+- **Question:** Should the order total be stored or calculated?
+- **Decision:** Calculated from order_items (SUM of quantity x unit_price).
+- **Why:** Avoids storing the same information twice, so the total can never
+  disagree with the items.
+- **Trade-off:** Slightly more work on each read. If delivery fees or discounts
+  are added later, a stored total (or a total snapshot on the invoice) may be needed.

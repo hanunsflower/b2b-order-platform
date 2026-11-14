@@ -14,3 +14,12 @@
 ### Next
 - Verify Docker with `docker --version`.
 - Write docs/requirements.md.
+
+
+- Docker Desktop installed and verified (`docker --version`, `docker run hello-world`).
+- Understanding now: Docker pulled an "image" (hello-world) and ran it as a
+  "container". We'll use the same idea to run PostgreSQL.
+
+  - Wrote the database schema (10 tables) and loaded it into PostgreSQL via Docker Compose.
+- Verified with `\dt`: all 10 tables created.
+- Decisions made today: variants, payment reference, pickup/delivery, stock reservation, calculated totals.

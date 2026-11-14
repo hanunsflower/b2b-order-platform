@@ -63,3 +63,11 @@
   disagree with the items.
 - **Trade-off:** Slightly more work on each read. If delivery fees or discounts
   are added later, a stored total (or a total snapshot on the invoice) may be needed.
+
+  ## Decision 6: ES modules
+- **Date:** 2026-11-14
+- **Decision:** Use ES modules (`import`/`export`) instead of CommonJS.
+- **Why:** It is the modern JavaScript standard and matches the syntax used in
+  React on the frontend, so the whole project uses one style.
+- **Trade-off:** Local imports need file extensions, and some older packages
+  need a default import.

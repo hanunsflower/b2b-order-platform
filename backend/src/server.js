@@ -1,6 +1,7 @@
 import express from 'express';
 import pool from './db.js';
 import authRouter from './routes/auth.js';
+import { requireAuth, requireRole } from './middleware/auth.js';
 
 const app = express();
 
@@ -22,5 +23,13 @@ app.get('/health', async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
+
+app.get('/api/me', requireAuth, (req, res) => {
+  res.json({ user: req.user });
+});
+
+app.get('/api/admin-only', requireAuth, requireRole('admin'), (req, res) => {
+  res.json({ message: 'Welcome, admin' });
+});
 
 app.listen(port, () => console.log(`API running on http://localhost:${port}`));

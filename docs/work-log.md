@@ -23,3 +23,5 @@
   - Wrote the database schema (10 tables) and loaded it into PostgreSQL via Docker Compose.
 - Verified with `\dt`: all 10 tables created.
 - Decisions made today: variants, payment reference, pickup/delivery, stock reservation, calculated totals.
+
+Backend skeleton running; /health confirms API-to-database connection.

@@ -2,6 +2,8 @@ import express from 'express';
 import pool from './db.js';
 import authRouter from './routes/auth.js';
 import { requireAuth, requireRole } from './middleware/auth.js';
+import adminRouter from './routes/admin.js';
+
 
 const app = express();
 
@@ -10,6 +12,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRouter);
+
+app.use('/api/admin', adminRouter);
 
 // Health check
 app.get('/health', async (req, res) => {

@@ -4,6 +4,7 @@ import { requireAuth, requireRole } from './middleware/auth.js';
 import authRouter from './modules/auth/auth.routes.js';
 import adminRouter from './modules/admin/admin.routes.js';
 import productsRouter from './modules/products/products.routes.js';
+import cartRouter from './modules/cart/cart.routes.js';
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,7 @@ app.get('/health', async (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/cart', cartRouter);
 
 // Temporary test routes (we'll remove these later)
 app.get('/api/me', requireAuth, (req, res) => {

@@ -75,3 +75,10 @@
   Feature-based modules (routes, controller, service per feature) so each feature’s code lives together and the structure scales as orders, payments, and invoices are added.
 
   feature-based structure, so each feature’s code lives together
+
+  ## Decision 9: Unpaid orders and held stock
+- **Date:** 2026-11-15
+- **Question:** What happens to reserved stock if a buyer never pays or never resubmits a rejected payment?
+- **Decision:** Both: the buyer can cancel their own order, and unpaid orders auto-cancel after 24 hours.
+- **Why:** Reserved stock is unavailable to other buyers, so abandoned orders must not lock it forever.
+- **Trade-off:** Auto-cancel needs a scheduled job, so it is built after manual cancel.

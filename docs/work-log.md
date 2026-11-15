@@ -29,3 +29,7 @@ Backend skeleton running; /health confirms API-to-database connection.
 Built requireAuth and requireRole middleware. Tested: buyer gets 403 on admin route, no token gets 401
 
 Refactored to feature modules (routes/controller per feature). Fixed ERR_MODULE_NOT_FOUND caused by db.js in the wrong folder. Moved approval + audit log into a transaction.
+
+Built order cancel (releases reserved stock) and admin fulfillment transitions. Tested the pickup/delivery rule and the full lifecycle.
+
+git add . && git commit -m "Add automated tests for auth and access control" && git push

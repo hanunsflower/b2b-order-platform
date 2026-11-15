@@ -167,3 +167,64 @@ export async function reviewPayment(req, res) {
     client.release();
   }
 }
+
+// Allowed moves. The target depends on pickup vs delivery.
+const NEXT_STATUS = {
+  payment_verified: { pickup: 'ready_for_pickup', delivery: 'out_for_delivery' },
+  ready_for_pickup: { pickup: 'completed' },
+  out_for_delivery: { delivery: 'completed' },
+};
+
+export async function updateOrderStatus(req, res) {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!Number.isInteger(Number(id))) {
+    return res.status(400).json({ error: 'id must be a number' });
+  }
+  if (!['ready_for_pickup', 'out_for_delivery', 'completed'].includes(status)) {
+    return res.status(400).json({ error: 'status must be ready_for_pickup, out_for_delivery or completed' });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const order = await client.query(
+      'SELECT id, status, fulfillment_method FROM orders WHERE id = $1 FOR UPDATE',
+      [id]
+    );
+    if (order.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    const { status: current, fulfillment_method: method } = order.rows[0];
+    const allowed = NEXT_STATUS[current]?.[method];
+    if (allowed !== status) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({
+        error: `A ${method} order that is ${current} cannot move to ${status}`,
+      });
+    }
+
+    await client.query(
+      'UPDATE orders SET status = $1, updated_at = now() WHERE id = $2',
+      [status, id]
+    );
+    await client.query(
+      `INSERT INTO audit_logs (actor_id, action, entity, entity_id, details)
+       VALUES ($1, 'order_status_changed', 'order', $2, $3)`,
+      [req.user.id, id, JSON.stringify({ from: current, to: status })]
+    );
+
+    await client.query('COMMIT');
+    res.json({ message: `Order is now ${status}` });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  } finally {
+    client.release();
+  }
+}

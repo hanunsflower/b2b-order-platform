@@ -104,3 +104,57 @@ export async function submitPayment(req, res) {
     client.release();
   }
 }
+
+export async function cancelOrder(req, res) {
+  const { id } = req.params;
+
+  if (!Number.isInteger(Number(id))) {
+    return res.status(400).json({ error: 'id must be a number' });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const order = await client.query(
+      'SELECT id, status FROM orders WHERE id = $1 AND buyer_id = $2 FOR UPDATE',
+      [id, req.user.id]
+    );
+    if (order.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    // payment_submitted is excluded: an admin may be reviewing it right now
+    if (!['pending_payment', 'payment_rejected'].includes(order.rows[0].status)) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({ error: `Cannot cancel an order that is ${order.rows[0].status}` });
+    }
+
+    // Release the held stock (on_hand is untouched, only the hold ends)
+    await client.query(
+      `UPDATE product_variants v
+       SET stock_reserved = v.stock_reserved - oi.quantity
+       FROM order_items oi
+       WHERE oi.variant_id = v.id AND oi.order_id = $1`,
+      [id]
+    );
+    await client.query(
+      `UPDATE orders SET status = 'cancelled', updated_at = now() WHERE id = $1`,
+      [id]
+    );
+    await client.query(
+      `INSERT INTO audit_logs (actor_id, action, entity, entity_id)
+       VALUES ($1, 'order_cancelled', 'order', $2)`,
+      [req.user.id, id]
+    );
+
+    await client.query('COMMIT');
+    res.json({ message: 'Order cancelled' });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  } finally {
+    client.release();
+  }
+}

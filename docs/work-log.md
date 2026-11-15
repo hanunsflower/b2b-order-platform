@@ -46,3 +46,5 @@ Built admin price/stock updates and a buyer invoice view. Wrote tests for stock 
 - Wrote variant tests. 21 automated tests pass.
 - Debugged a server crash (ECONNRESET/ECONNREFUSED in tests). Added a pool error
   handler in db.js so a dropped database connection no longer kills the server.
+
+  Created the React app with Vite, added CORS and an API helper that attaches the JWT from localStorage.

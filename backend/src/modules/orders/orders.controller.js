@@ -47,3 +47,60 @@ export async function listMyOrders(req, res) {
     res.status(500).json({ error: 'Server error' });
   }
 }
+
+export async function submitPayment(req, res) {
+  const { id } = req.params;
+  const { referenceNumber } = req.body;
+
+  if (!Number.isInteger(Number(id))) {
+    return res.status(400).json({ error: 'id must be a number' });
+  }
+  if (typeof referenceNumber !== 'string' || referenceNumber.trim().length < 4) {
+    return res.status(400).json({ error: 'referenceNumber is required (min 4 characters)' });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Only the buyer's own order. 404 hides other buyers' orders.
+    const order = await client.query(
+      `SELECT id, status FROM orders WHERE id = $1 AND buyer_id = $2 FOR UPDATE`,
+      [id, req.user.id]
+    );
+    if (order.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    if (!['pending_payment', 'payment_rejected'].includes(order.rows[0].status)) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({ error: `Cannot submit payment for an order that is ${order.rows[0].status}` });
+    }
+
+    await client.query(
+      `INSERT INTO payments (order_id, reference_number) VALUES ($1, $2)`,
+      [id, referenceNumber.trim()]
+    );
+    await client.query(
+      `UPDATE orders SET status = 'payment_submitted', updated_at = now() WHERE id = $1`,
+      [id]
+    );
+    await client.query(
+      `INSERT INTO audit_logs (actor_id, action, entity, entity_id, details)
+       VALUES ($1, 'payment_submitted', 'order', $2, $3)`,
+      [req.user.id, id, JSON.stringify({ referenceNumber: referenceNumber.trim() })]
+    );
+
+    await client.query('COMMIT');
+    res.status(201).json({ message: 'Payment submitted. Waiting for Admin verification.' });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'This reference number was already used' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  } finally {
+    client.release();
+  }
+}

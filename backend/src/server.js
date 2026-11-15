@@ -1,4 +1,7 @@
 import express from 'express';
+
+import cors from 'cors';
+
 import pool from './db/db.js';
 import authRouter from './modules/auth/auth.routes.js';
 import adminRouter from './modules/admin/admin.routes.js';
@@ -7,6 +10,8 @@ import cartRouter from './modules/cart/cart.routes.js';
 import ordersRouter from './modules/orders/orders.routes.js';
 
 const app = express();
+
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
 app.get('/health', async (req, res) => {

@@ -5,15 +5,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "node --env-file=.env --watch src/server.js",
-  "test": "node --env-file=.env --test",
-  "migrate": "node --env-file=.env src/migrate.js"
-},
+    "dev": "node --env-file=.env --watch src/server.js",
+    "test": "node --env-file=.env --test",
+    "migrate": "node --env-file=.env src/migrate.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
     "express": "^5.3.0",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.1"

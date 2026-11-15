@@ -87,3 +87,8 @@
 - **Decision:** Use numbered SQL migration files with a runner that records applied files in a `schema_migrations` table. Old files are never edited; changes are new files.
 - **Why:** Any machine can rebuild the same schema with one command, and changes are applied exactly once.
 - **Trade-off:** More files than a single schema.sql, and fixing a mistake means writing a new migration.
+
+## Decision 11: Frontend in Docker later
+- **Decision:** Run the frontend with `npm run dev` during development and add it to docker-compose at the end.
+- **Why:** Fast reloads while building screens; the backend and database already run reproducibly in Docker.
+- **Trade-off:** Until it is added, a mentor needs one extra command to start the frontend.

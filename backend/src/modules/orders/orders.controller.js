@@ -158,3 +158,40 @@ export async function cancelOrder(req, res) {
     client.release();
   }
 }
+
+export async function getInvoice(req, res) {
+  const { id } = req.params;
+  if (!Number.isInteger(Number(id))) {
+    return res.status(400).json({ error: 'id must be a number' });
+  }
+
+  try {
+    const inv = await pool.query(
+      `SELECT i.invoice_number, i.issued_at, o.id AS order_id, o.fulfillment_method
+       FROM invoices i
+       JOIN orders o ON o.id = i.order_id
+       WHERE o.id = $1 AND o.buyer_id = $2`,
+      [id, req.user.id]
+    );
+    if (inv.rows.length === 0) {
+      return res.status(404).json({ error: 'Invoice not found' });
+    }
+
+    const items = await pool.query(
+      `SELECT v.sku, p.name, v.shade, oi.quantity, oi.unit_price,
+              (oi.quantity * oi.unit_price) AS line_total
+       FROM order_items oi
+       JOIN product_variants v ON v.id = oi.variant_id
+       JOIN products p ON p.id = v.product_id
+       WHERE oi.order_id = $1
+       ORDER BY oi.id`,
+      [id]
+    );
+    const total = items.rows.reduce((s, r) => s + Number(r.line_total), 0);
+
+    res.json({ ...inv.rows[0], items: items.rows, total: total.toFixed(2) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}

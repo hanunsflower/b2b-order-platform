@@ -1,5 +1,5 @@
 import pool from '../../db/db.js';
-import { createProductWithVariants } from './products.service.js';
+import { createProductWithVariants, updateVariant } from './products.service.js';
 
 export async function createProduct(req, res) {
   const { name, brand, description, variants } = req.body;
@@ -50,6 +50,37 @@ export async function listProducts(req, res) {
     );
     res.json(result.rows);
   } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+export async function updateVariantController(req, res) {
+  const { variantId } = req.params;
+  const { price, stockDelta } = req.body;
+
+  // 1. variantId must be an integer (400)
+  if (!Number.isInteger(Number(variantId))) {
+    return res.status(400).json({ error: 'variantId must be an integer' });
+  }
+  // 2. at least one of price or stockDelta must be provided (400)
+  if (!price && !stockDelta) {
+    return res.status(400).json({ error: 'At least one of price or stockDelta must be provided' });
+  }
+  // 3. if price is given: a number >= 0 (400)
+  if (price !== undefined && (typeof price !== 'number' || price < 0)) {
+    return res.status(400).json({ error: 'Price must be a number >= 0' });
+  }
+  // 4. if stockDelta is given: an integer (400)
+  if (stockDelta !== undefined && !Number.isInteger(stockDelta)) {
+    return res.status(400).json({ error: 'Stock delta must be an integer' });
+  }
+
+  try {
+    const variant = await updateVariant(Number(variantId), { price, stockDelta }, req.user.id);
+    res.json(variant);
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }

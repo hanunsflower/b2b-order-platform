@@ -82,3 +82,8 @@
 - **Decision:** Both: the buyer can cancel their own order, and unpaid orders auto-cancel after 24 hours.
 - **Why:** Reserved stock is unavailable to other buyers, so abandoned orders must not lock it forever.
 - **Trade-off:** Auto-cancel needs a scheduled job, so it is built after manual cancel.
+
+## Decision 10: Database migrations
+- **Decision:** Use numbered SQL migration files with a runner that records applied files in a `schema_migrations` table. Old files are never edited; changes are new files.
+- **Why:** Any machine can rebuild the same schema with one command, and changes are applied exactly once.
+- **Trade-off:** More files than a single schema.sql, and fixing a mistake means writing a new migration.

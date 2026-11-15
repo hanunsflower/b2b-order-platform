@@ -33,3 +33,16 @@ Refactored to feature modules (routes/controller per feature). Fixed ERR_MODULE_
 Built order cancel (releases reserved stock) and admin fulfillment transitions. Tested the pickup/delivery rule and the full lifecycle.
 
 git add . && git commit -m "Add automated tests for auth and access control" && git push
+
+Wrote stock tests, including a simultaneous-checkout race test. Exactly one buyer gets the last unit (201), the other gets 409. Proves the FOR UPDATE lock works
+
+Wrote 7 tests for payment verification, rejection and resubmission, duplicate references, cancel, and cross-buyer access. Tests check real stock numbers in the database. 19 tests pass.
+
+Both buyers check out at the same moment for the last unit. Each checkout locks the variant row with FOR UPDATE, so the database lets one go first and makes the other wait. The first one sees 1 available, reserves it (stock_reserved becomes 1) and succeeds with 201. When the second one gets the lock, available is now 0, so it fails with 409. Without the lock, both would read “1 available” before either one updated it, and we would oversell.
+
+Built admin price/stock updates and a buyer invoice view. Wrote tests for stock increase and the reserved-stock rule. 21 tests pass. Fixed my test by matching the helper signatures.
+
+- Built admin price/stock updates (with audit log) and buyer invoice view.
+- Wrote variant tests. 21 automated tests pass.
+- Debugged a server crash (ECONNRESET/ECONNREFUSED in tests). Added a pool error
+  handler in db.js so a dropped database connection no longer kills the server.

@@ -8,6 +8,7 @@ import Cart from "./pages/Cart.jsx";
 import Orders from "./pages/Orders.jsx";
 import AdminPayments from "./pages/AdminPayments.jsx";
 import AdminOrders from "./pages/AdminOrders.jsx";
+import Register from "./pages/Register.jsx";
 
 export default function App() {
   return (
@@ -65,6 +66,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/register" element={<Register />} />
     </Routes>
   );
 }

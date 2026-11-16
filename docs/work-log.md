@@ -50,3 +50,7 @@ Built admin price/stock updates and a buyer invoice view. Wrote tests for stock 
   Created the React app with Vite, added CORS and an API helper that attaches the JWT from localStorage.
 
 Built the login page. Debugged ‘Cannot reach the server’: a stray local API was competing with the Docker API on port 3000, and Docker had stopped. Learned to run only one API at a time.
+
+Nov 16, Day 3
+
+Added token decoding, ProtectedRoute and Home redirect by role. Tested buyer/admin routing

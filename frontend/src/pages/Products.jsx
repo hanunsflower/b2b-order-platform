@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { api } from "../api.js";
 import { logout } from "../auth.js";
 
@@ -36,6 +37,10 @@ export default function Products() {
   return (
     <div style={{ maxWidth: 700, margin: "0 auto", padding: 16 }}>
       <button onClick={handleLogout}>Log out</button>
+
+      <Link to="/cart" style={{ marginLeft: 8 }}>
+        View cart
+      </Link>
       <h1>Products</h1>
       {message && <p>{message}</p>}
 

@@ -4,6 +4,8 @@ import Home from "./pages/Home.jsx";
 import Products from "./pages/Products.jsx";
 import AdminBuyers from "./pages/AdminBuyers.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Cart from "./pages/Cart.jsx";
+import Orders from "./pages/Orders.jsx";
 
 export default function App() {
   return (
@@ -27,6 +29,24 @@ export default function App() {
         }
       />
       <Route path="*" element={<Navigate to="/login" />} />
+
+      <Route
+        path="/cart"
+        element={
+          <ProtectedRoute role="buyer">
+            <Cart />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/orders"
+        element={
+          <ProtectedRoute role="buyer">
+            <Orders />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

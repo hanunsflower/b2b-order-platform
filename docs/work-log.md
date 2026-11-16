@@ -54,3 +54,5 @@ Built the login page. Debugged ‘Cannot reach the server’: a stray local API 
 Nov 16, Day 3
 
 Added token decoding, ProtectedRoute and Home redirect by role. Tested buyer/admin routing
+
+Built the My orders page (payment reference, cancel, invoice). The invoice was rendering below the list, so I moved it to the top

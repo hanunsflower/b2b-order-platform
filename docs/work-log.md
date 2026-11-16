@@ -62,3 +62,5 @@ Built admin Pending buyers and Payments screens. Verified the full flow in the b
 Built the admin Orders screen with status buttons driven by pickup/delivery. Fixed missing-file imports and restored AdminPayments after editing it by mistake (Git can restore files)
 
 Built the register page. Tested duplicate email, short password, and the pending-approval flow end to end in the browser.
+
+Built the admin products and stock screen (price update, stock +/-). Tested the reserved-stock rule (409) from the browser.

@@ -14,6 +14,7 @@ export default function AdminNav() {
       <Link to="/admin/buyers">Buyers</Link>
       <Link to="/admin/payments">Payments</Link>
       <Link to="/admin/orders">Orders</Link>
+      <Link to="/admin/products">Products</Link>
       <button onClick={handleLogout}>Log out</button>
     </div>
   );

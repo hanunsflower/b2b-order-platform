@@ -9,6 +9,7 @@ import Orders from "./pages/Orders.jsx";
 import AdminPayments from "./pages/AdminPayments.jsx";
 import AdminOrders from "./pages/AdminOrders.jsx";
 import Register from "./pages/Register.jsx";
+import AdminProducts from "./pages/AdminProducts.jsx";
 
 export default function App() {
   return (
@@ -67,6 +68,14 @@ export default function App() {
         }
       />
       <Route path="/register" element={<Register />} />
+      <Route
+        path="/admin/products"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminProducts />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

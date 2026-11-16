@@ -64,3 +64,5 @@ Built the admin Orders screen with status buttons driven by pickup/delivery. Fix
 Built the register page. Tested duplicate email, short password, and the pending-approval flow end to end in the browser.
 
 Built the admin products and stock screen (price update, stock +/-). Tested the reserved-stock rule (409) from the browser.
+
+Added the create-product form to the admin products page. Learned that number inputs still return strings, so the body converts them with Number().

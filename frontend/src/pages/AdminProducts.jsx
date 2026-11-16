@@ -2,9 +2,20 @@ import { useEffect, useState } from "react";
 import { api } from "../api.js";
 import AdminNav from "../components/AdminNav.jsx";
 
+const emptyForm = {
+  name: "",
+  brand: "",
+  sku: "",
+  shade: "",
+  size: "",
+  price: "",
+  stock: "",
+};
+
 export default function AdminProducts() {
   const [items, setItems] = useState([]);
   const [edits, setEdits] = useState({}); // { [variantId]: { price: "", delta: "" } }
+  const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
 
   async function loadProducts() {
@@ -25,6 +36,10 @@ export default function AdminProducts() {
       ...edits,
       [variantId]: { ...edits[variantId], [field]: value },
     });
+  }
+
+  function setField(field, value) {
+    setForm({ ...form, [field]: value });
   }
 
   async function update(variantId) {
@@ -55,11 +70,93 @@ export default function AdminProducts() {
     }
   }
 
+  async function createProduct(e) {
+    e.preventDefault();
+    setMessage("");
+
+    const body = {
+      name: form.name,
+      brand: form.brand,
+      variants: [
+        {
+          sku: form.sku,
+          shade: form.shade,
+          size: form.size,
+          price: Number(form.price),
+          stock: Number(form.stock),
+        },
+      ],
+    };
+
+    const { ok, data } = await api("POST", "/api/products", body);
+    if (ok) {
+      setMessage(`Created ${data.name}`);
+      setForm(emptyForm);
+      loadProducts();
+    } else {
+      setMessage(data?.error || "Could not create product");
+    }
+  }
+
   return (
     <div style={{ maxWidth: 700, margin: "0 auto", padding: 16 }}>
       <AdminNav />
       <h1>Products and stock</h1>
       {message && <p>{message}</p>}
+
+      <form
+        onSubmit={createProduct}
+        style={{ border: "2px solid #333", padding: 8, marginBottom: 16 }}
+      >
+        <h3>Create a product</h3>
+        <input
+          placeholder="Name"
+          value={form.name}
+          onChange={(e) => setField("name", e.target.value)}
+          required
+        />
+        <input
+          placeholder="Brand"
+          value={form.brand}
+          onChange={(e) => setField("brand", e.target.value)}
+        />
+        <input
+          placeholder="SKU (e.g. FND-BEIGE-30)"
+          value={form.sku}
+          onChange={(e) => setField("sku", e.target.value)}
+          required
+        />
+        <input
+          placeholder="Shade"
+          value={form.shade}
+          onChange={(e) => setField("shade", e.target.value)}
+        />
+        <input
+          placeholder="Size"
+          value={form.size}
+          onChange={(e) => setField("size", e.target.value)}
+        />
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="Price"
+          value={form.price}
+          onChange={(e) => setField("price", e.target.value)}
+          required
+        />
+        <input
+          type="number"
+          min="0"
+          step="1"
+          placeholder="Stock"
+          value={form.stock}
+          onChange={(e) => setField("stock", e.target.value)}
+          required
+        />
+        <button type="submit">Create</button>
+      </form>
+
       {items.length === 0 && <p>No products yet.</p>}
 
       {items.map((it) => (

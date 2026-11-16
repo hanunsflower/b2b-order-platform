@@ -13,6 +13,7 @@ export default function AdminNav() {
     <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
       <Link to="/admin/buyers">Buyers</Link>
       <Link to="/admin/payments">Payments</Link>
+      <Link to="/admin/orders">Orders</Link>
       <button onClick={handleLogout}>Log out</button>
     </div>
   );

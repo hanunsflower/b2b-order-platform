@@ -11,7 +11,7 @@ export default function AdminPayments() {
     if (response.ok) {
       setPayments(response.data);
     } else {
-      setMessage(response.data?.error || 'Could not load payments');
+      setMessage(response.data?.error || "Could not load payments");
     }
   }
 
@@ -20,11 +20,13 @@ export default function AdminPayments() {
   }, []);
 
   async function review(paymentId, status) {
-    const response = await api("PATCH", `/api/admin/payments/${paymentId}`, { status });
+    const response = await api("PATCH", `/api/admin/payments/${paymentId}`, {
+      status,
+    });
     if (response.ok) {
       setMessage(`Payment ${status}`);
     } else {
-      setMessage(response.data?.error || 'Could not update');
+      setMessage(response.data?.error || "Could not update");
     }
     loadPayments();
   }

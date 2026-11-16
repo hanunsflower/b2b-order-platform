@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Cart from "./pages/Cart.jsx";
 import Orders from "./pages/Orders.jsx";
 import AdminPayments from "./pages/AdminPayments.jsx";
+import AdminOrders from "./pages/AdminOrders.jsx";
 
 export default function App() {
   return (
@@ -53,6 +54,14 @@ export default function App() {
         element={
           <ProtectedRoute role="admin">
             <AdminPayments />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/orders"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminOrders />
           </ProtectedRoute>
         }
       />

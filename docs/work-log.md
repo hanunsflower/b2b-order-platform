@@ -56,3 +56,5 @@ Nov 16, Day 3
 Added token decoding, ProtectedRoute and Home redirect by role. Tested buyer/admin routing
 
 Built the My orders page (payment reference, cancel, invoice). The invoice was rendering below the list, so I moved it to the top
+
+Built admin Pending buyers and Payments screens. Verified the full flow in the browser: approve buyer, submit payment, verify (invoice appears), reject (stock stays reserved, buyer can resubmit)

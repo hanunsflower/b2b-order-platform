@@ -6,6 +6,7 @@ import AdminBuyers from "./pages/AdminBuyers.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Cart from "./pages/Cart.jsx";
 import Orders from "./pages/Orders.jsx";
+import AdminPayments from "./pages/AdminPayments.jsx";
 
 export default function App() {
   return (
@@ -44,6 +45,14 @@ export default function App() {
         element={
           <ProtectedRoute role="buyer">
             <Orders />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/payments"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminPayments />
           </ProtectedRoute>
         }
       />

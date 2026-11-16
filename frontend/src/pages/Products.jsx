@@ -41,6 +41,10 @@ export default function Products() {
       <Link to="/cart" style={{ marginLeft: 8 }}>
         View cart
       </Link>
+
+      <Link to="/orders" style={{ marginLeft: 8 }}>
+        My orders
+      </Link>
       <h1>Products</h1>
       {message && <p>{message}</p>}
 

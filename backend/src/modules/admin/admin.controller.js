@@ -168,6 +168,45 @@ export async function reviewPayment(req, res) {
   }
 }
 
+const ORDER_STATUSES = [
+  'pending_payment',
+  'payment_submitted',
+  'payment_verified',
+  'payment_rejected',
+  'ready_for_pickup',
+  'out_for_delivery',
+  'completed',
+  'cancelled',
+];
+
+// NEW: list all orders (optionally filtered by status)
+export async function listOrders(req, res) {
+  const { status } = req.query;
+
+  if (status && !ORDER_STATUSES.includes(status)) {
+    return res.status(400).json({ error: `status must be one of: ${ORDER_STATUSES.join(', ')}` });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT o.id, o.status, o.fulfillment_method, o.delivery_address, o.created_at,
+              u.business_name,
+              SUM(oi.quantity * oi.unit_price) AS total
+       FROM orders o
+       JOIN order_items oi ON oi.order_id = o.id
+       JOIN users u ON u.id = o.buyer_id
+       ${status ? 'WHERE o.status = $1' : ''}
+       GROUP BY o.id, u.business_name
+       ORDER BY o.created_at DESC`,
+      status ? [status] : []
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
 // Allowed moves. The target depends on pickup vs delivery.
 const NEXT_STATUS = {
   payment_verified: { pickup: 'ready_for_pickup', delivery: 'out_for_delivery' },

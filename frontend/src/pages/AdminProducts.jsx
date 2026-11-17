@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api.js";
 import AdminNav from "../components/AdminNav.jsx";
+import styles from "./AdminProducts.module.css";
 
 const emptyForm = {
   name: "",
@@ -99,15 +100,12 @@ export default function AdminProducts() {
   }
 
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", padding: 16 }}>
+    <div className={styles.page}>
       <AdminNav />
       <h1>Products and stock</h1>
-      {message && <p>{message}</p>}
+      {message && <p className={styles.notice}>{message}</p>}
 
-      <form
-        onSubmit={createProduct}
-        style={{ border: "2px solid #333", padding: 8, marginBottom: 16 }}
-      >
+      <form className={styles.createForm} onSubmit={createProduct}>
         <h3>Create a product</h3>
         <input
           placeholder="Name"
@@ -157,18 +155,19 @@ export default function AdminProducts() {
         <button type="submit">Create</button>
       </form>
 
-      {items.length === 0 && <p>No products yet.</p>}
+      {items.length === 0 && <p className={styles.empty}>No products yet.</p>}
 
       {items.map((it) => (
-        <div
-          key={it.variant_id}
-          style={{ border: "1px solid #ccc", padding: 8, marginBottom: 8 }}
-        >
-          <p>
-            <strong>{it.name}</strong> ({it.shade}, {it.size}) - {it.sku}
+        <div key={it.variant_id} className={styles.card}>
+          <p className={styles.name}>
+            {it.name} ({it.shade}, {it.size}) — {it.sku}
           </p>
-          <p>
-            Price: {Number(it.price).toFixed(2)} ETB - Available: {it.available}
+          <p className={styles.sub}>
+            Price:{" "}
+            <span className={styles.price}>
+              {Number(it.price).toFixed(2)} ETB
+            </span>{" "}
+            · Available: {it.available}
           </p>
           <input
             placeholder="New price"

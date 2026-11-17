@@ -16,6 +16,8 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />} />
+      <Route path="/register" element={<Register />} />
+
       <Route
         path="/products"
         element={
@@ -25,16 +27,6 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/buyers"
-        element={
-          <ProtectedRoute role="admin">
-            <AdminBuyers />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/login" />} />
-
-      <Route
         path="/cart"
         element={
           <ProtectedRoute role="buyer">
@@ -42,12 +34,20 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/orders"
         element={
           <ProtectedRoute role="buyer">
             <Orders />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/buyers"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminBuyers />
           </ProtectedRoute>
         }
       />
@@ -67,7 +67,6 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-      <Route path="/register" element={<Register />} />
       <Route
         path="/admin/products"
         element={
@@ -76,6 +75,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
 }

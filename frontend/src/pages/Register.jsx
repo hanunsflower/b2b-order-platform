@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api.js";
+import styles from "./Register.module.css";
 
 export default function Register() {
   const [businessName, setBusinessName] = useState("");
@@ -16,7 +17,7 @@ export default function Register() {
     const { ok, data } = await api("POST", "/api/auth/register", {
       email,
       password,
-      businessName
+      businessName,
     });
     if (!ok) {
       setError(data?.error || "Registration failed");
@@ -27,20 +28,21 @@ export default function Register() {
 
   if (done) {
     return (
-      <div style={{ maxWidth: 400, margin: "0 auto", padding: 16 }}>
-        <h1>Registered</h1>
+      <div className={styles.form}>
+        <p className={styles.brand}>💄 GLOW WHOLESALE</p>
+        <h1 className={styles.title}>Registered</h1>
         <p>Registered. Please wait for Admin approval.</p>
-        <Link to="/login">Back to login</Link>
+        <p className={styles.footer}>
+          <Link to="/login">Back to login</Link>
+        </p>
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ maxWidth: 400, margin: "0 auto", padding: 16 }}
-    >
-      <h1>Register</h1>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <p className={styles.brand}>💄 GLOW WHOLESALE</p>
+      <h1 className={styles.title}>Register</h1>
       <input
         placeholder="Business name"
         value={businessName}
@@ -61,9 +63,9 @@ export default function Register() {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
       <button type="submit">Register</button>
-      <p>
+      <p className={styles.footer}>
         Already have an account? <Link to="/login">Log in</Link>
       </p>
     </form>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api.js";
+import styles from "./Login.module.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -25,8 +26,9 @@ export default function Login() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Login</h1>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <p className={styles.brand}>💄 GLOW WHOLESALE</p>
+      <h1 className={styles.title}>Welcome back</h1>
       <input
         type="email"
         placeholder="Email"
@@ -41,9 +43,9 @@ export default function Login() {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
       <button type="submit">Log in</button>
-      <p>
+      <p className={styles.footer}>
         New business? <Link to="/register">Register</Link>
       </p>
     </form>

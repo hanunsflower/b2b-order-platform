@@ -1,0 +1,18 @@
+.page { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+
+.notice { background: #fff0f6; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; }
+.empty { text-align: center; color: var(--muted); padding: 40px 0; }
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+  border-left: 5px solid var(--primary);
+}
+.card p { margin: 4px 0; }
+
+.approve { background: linear-gradient(135deg, #2f9e44, #51cf66); }
+.reject { background: transparent; color: var(--danger); border: 1.5px solid var(--danger); }
+.reject:hover { background: var(--danger); color: #fff; box-shadow: none; }

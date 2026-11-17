@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api.js";
 import AdminNav from "../components/AdminNav.jsx";
+import styles from "./AdminBuyers.module.css";
 
 export default function AdminBuyers() {
   const [buyers, setBuyers] = useState([]);
@@ -11,7 +12,7 @@ export default function AdminBuyers() {
     if (response.ok) {
       setBuyers(response.data);
     } else {
-      setMessage(response.data?.error || 'Could not load buyers');
+      setMessage(response.data?.error || "Could not load buyers");
     }
   }
 
@@ -20,33 +21,41 @@ export default function AdminBuyers() {
   }, []);
 
   async function review(id, status) {
-
     const response = await api("PATCH", `/api/admin/buyers/${id}`, { status });
     if (response.ok) {
       setMessage(`Buyer ${status}`);
     } else {
-      setMessage(response.data?.error || 'Could not update');
+      setMessage(response.data?.error || "Could not update");
     }
     loadBuyers();
   }
 
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", padding: 16 }}>
+    <div className={styles.page}>
       <AdminNav />
       <h1>Pending buyers</h1>
-      {message && <p>{message}</p>}
-      {buyers.length === 0 && <p>No buyers waiting for approval.</p>}
+      {message && <p className={styles.notice}>{message}</p>}
+      {buyers.length === 0 && (
+        <p className={styles.empty}>No buyers waiting for approval.</p>
+      )}
 
       {buyers.map((b) => (
-        <div
-          key={b.id}
-          style={{ border: "1px solid #ccc", padding: 8, marginBottom: 8 }}
-        >
+        <div key={b.id} className={styles.card}>
           <p>
             <strong>{b.business_name}</strong> ({b.email})
           </p>
-          <button onClick={() => review(b.id, "approved")}>Approve</button>
-          <button onClick={() => review(b.id, "rejected")}>Reject</button>
+          <button
+            className={styles.approve}
+            onClick={() => review(b.id, "approved")}
+          >
+            Approve
+          </button>
+          <button
+            className={styles.reject}
+            onClick={() => review(b.id, "rejected")}
+          >
+            Reject
+          </button>
         </div>
       ))}
     </div>

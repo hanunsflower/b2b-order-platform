@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { api } from "../api.js";
+import BuyerNav from "../components/BuyerNav.jsx";
+import styles from "./Cart.module.css";
 
 export default function Cart() {
   const [items, setItems] = useState([]);
@@ -45,63 +47,70 @@ export default function Cart() {
   const total = items.reduce((sum, i) => sum + Number(i.line_total), 0);
 
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", padding: 16 }}>
-      <Link to="/products">Back to products</Link>
+    <div className={styles.page}>
+      <BuyerNav />
       <h1>Your cart</h1>
-      {message && <p style={{ color: "red" }}>{message}</p>}
-      {items.length === 0 && <p>Your cart is empty.</p>}
+      {message && <p className={styles.notice}>{message}</p>}
+      {items.length === 0 && (
+        <p className={styles.empty}>Your cart is empty.</p>
+      )}
 
       {items.map((i) => (
-        <div
-          key={i.variant_id}
-          style={{ border: "1px solid #ccc", padding: 8, marginBottom: 8 }}
-        >
-          <p>
-            <strong>{i.name}</strong> ({i.shade}, {i.size})
-          </p>
-          <p>
-            {Number(i.price).toFixed(2)} ETB x {i.quantity} ={" "}
-            {Number(i.line_total).toFixed(2)} ETB
-          </p>
-          <p>Available: {i.available}</p>
-          <button onClick={() => removeItem(i.variant_id)}>Remove</button>
+        <div key={i.variant_id} className={styles.card}>
+          <div>
+            <p className={styles.name}>{i.name}</p>
+            <p className={styles.sub}>
+              {i.shade} · {i.size} · Available: {i.available}
+            </p>
+          </div>
+          <div>
+            <p className={styles.line}>
+              {Number(i.price).toFixed(2)} ETB × {i.quantity} ={" "}
+              {Number(i.line_total).toFixed(2)} ETB
+            </p>
+            <button
+              className={styles.remove}
+              onClick={() => removeItem(i.variant_id)}
+            >
+              Remove
+            </button>
+          </div>
         </div>
       ))}
 
       {items.length > 0 && (
-        <div>
-          <h3>Total: {total.toFixed(2)} ETB</h3>
+        <div className={styles.summary}>
+          <h3 className={styles.total}>Total: {total.toFixed(2)} ETB</h3>
 
-          <label>
-            <input
-              type="radio"
-              checked={method === "pickup"}
-              onChange={() => setMethod("pickup")}
-            />
-            Pickup
-          </label>
-          <label style={{ marginLeft: 12 }}>
-            <input
-              type="radio"
-              checked={method === "delivery"}
-              onChange={() => setMethod("delivery")}
-            />
-            Delivery
-          </label>
+          <div className={styles.options}>
+            <label className={styles.option}>
+              <input
+                type="radio"
+                checked={method === "pickup"}
+                onChange={() => setMethod("pickup")}
+              />
+              Pickup
+            </label>
+            <label className={styles.option}>
+              <input
+                type="radio"
+                checked={method === "delivery"}
+                onChange={() => setMethod("delivery")}
+              />
+              Delivery
+            </label>
+          </div>
 
           {method === "delivery" && (
-            <div>
-              <input
-                placeholder="Delivery address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
-            </div>
+            <input
+              className={styles.address}
+              placeholder="Delivery address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
           )}
 
-          <button onClick={checkout} style={{ marginTop: 8 }}>
-            Place order
-          </button>
+          <button onClick={checkout}>Place order</button>
         </div>
       )}
     </div>

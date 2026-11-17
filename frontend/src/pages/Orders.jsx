@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { api } from "../api.js";
+import BuyerNav from "../components/BuyerNav.jsx";
+import styles from "./Orders.module.css";
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
@@ -56,13 +57,13 @@ export default function Orders() {
     ].includes(s);
 
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", padding: 16 }}>
-      <Link to="/products">Back to products</Link>
+    <div className={styles.page}>
+      <BuyerNav />
       <h1>My orders</h1>
-      {message && <p>{message}</p>}
+      {message && <p className={styles.notice}>{message}</p>}
 
       {invoice && (
-        <div style={{ border: "2px solid #333", padding: 8, marginBottom: 16 }}>
+        <div className={styles.invoice}>
           <h3>Invoice {invoice.invoice_number}</h3>
           {invoice.items.map((it) => (
             <p key={it.sku}>
@@ -81,21 +82,23 @@ export default function Orders() {
       {orders.length === 0 && <p>No orders yet.</p>}
 
       {orders.map((o) => (
-        <div
-          key={o.id}
-          style={{ border: "1px solid #ccc", padding: 8, marginBottom: 8 }}
-        >
-          <p>
-            <strong>Order #{o.id}</strong> - {o.status}
-          </p>
-          <p>
+        <div key={o.id} className={styles.card}>
+          <div className={styles.head}>
+            <p className={styles.id}>Order #{o.id}</p>
+            <span className={`${styles.badge} ${styles[o.status] || ""}`}>
+              {o.status}
+            </span>
+          </div>
+          <p className={styles.sub}>
             {o.fulfillment_method}
             {o.delivery_address ? `: ${o.delivery_address}` : ""}
           </p>
-          <p>Total: {Number(o.total).toFixed(2)} ETB</p>
+          <p className={styles.total}>
+            Total: {Number(o.total).toFixed(2)} ETB
+          </p>
 
           {canPay(o.status) && (
-            <div>
+            <div className={styles.payRow}>
               <input
                 placeholder="Payment reference (e.g. CBE123456)"
                 value={refs[o.id] || ""}
@@ -104,7 +107,12 @@ export default function Orders() {
               <button onClick={() => submitPayment(o.id)}>
                 Submit payment
               </button>
-              <button onClick={() => cancelOrder(o.id)}>Cancel order</button>
+              <button
+                className={styles.cancel}
+                onClick={() => cancelOrder(o.id)}
+              >
+                Cancel order
+              </button>
             </div>
           )}
           {hasInvoice(o.status) && (

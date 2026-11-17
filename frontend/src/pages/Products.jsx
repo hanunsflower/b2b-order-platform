@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { api } from "../api.js";
-import { logout } from "../auth.js";
+import BuyerNav from "../components/BuyerNav.jsx";
+import styles from "./Products.module.css";
 
 export default function Products() {
   const [items, setItems] = useState([]);
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     async function load() {
@@ -29,55 +27,38 @@ export default function Products() {
     setMessage(ok ? "Added to cart" : data?.error || "Could not add");
   }
 
-  function handleLogout() {
-    logout();
-    navigate("/login");
-  }
-
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", padding: 16 }}>
-      <button onClick={handleLogout}>Log out</button>
-
-      <Link to="/cart" style={{ marginLeft: 8 }}>
-        View cart
-      </Link>
-
-      <Link to="/orders" style={{ marginLeft: 8 }}>
-        My orders
-      </Link>
-      <h1>Products</h1>
-      {message && <p>{message}</p>}
-
+    <div className={styles.page}>
+      <BuyerNav />
+      <h1>Our products</h1>
+      {message && <p className={styles.notice}>{message}</p>}
       {items.length === 0 && <p>No products yet.</p>}
-
-      {items.map((item) => (
-        <div
-          key={item.variant_id}
-          style={{ border: "1px solid #ccc", padding: 8, marginBottom: 8 }}
-        >
-          <p>
-            <strong>Name:</strong> {item.name}
-          </p>
-          <p>
-            <strong>Shade:</strong> {item.shade}
-          </p>
-          <p>
-            <strong>Size:</strong> {item.size}
-          </p>
-          <p>
-            <strong>Price:</strong> {Number(item.price).toFixed(2)} ETB
-          </p>
-          <p>
-            <strong>Available:</strong> {item.available}
-          </p>
-          <button
-            onClick={() => addToCart(item.variant_id)}
-            disabled={item.available === 0}
-          >
-            Add to cart
-          </button>
-        </div>
-      ))}
+      <div className={styles.grid}>
+        {items.map((item) => (
+          <div key={item.variant_id} className={styles.card}>
+            <p className={styles.name}>{item.name}</p>
+            <p className={styles.meta}>
+              {item.shade} · {item.size}
+            </p>
+            <p className={styles.price}>
+              {Number(item.price).toFixed(2)} <small>ETB</small>
+            </p>
+            <span
+              className={`${styles.stock} ${item.available === 0 ? styles.out : item.available < 5 ? styles.low : ""}`}
+            >
+              {item.available === 0
+                ? "Out of stock"
+                : `${item.available} available`}
+            </span>
+            <button
+              onClick={() => addToCart(item.variant_id)}
+              disabled={item.available === 0}
+            >
+              Add to cart
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

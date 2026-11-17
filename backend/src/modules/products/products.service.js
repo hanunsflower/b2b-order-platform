@@ -1,14 +1,23 @@
 import pool from '../../db/db.js';
 
-export async function createProductWithVariants({ name, brand, description, variants }, actorId) {
+function httpError(status, message) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
+
+export async function createProductWithVariants(
+  { name, brand, description, imageUrl, variants },
+  actorId
+) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
     const p = await client.query(
-      `INSERT INTO products (name, brand, description)
-       VALUES ($1, $2, $3) RETURNING id, name, brand`,
-      [name, brand, description]
+      `INSERT INTO products (name, brand, description, image_url)
+       VALUES ($1, $2, $3, $4) RETURNING id, name, brand, image_url`,
+      [name, brand, description, imageUrl || null]
     );
     const product = p.rows[0];
 
@@ -36,10 +45,32 @@ export async function createProductWithVariants({ name, brand, description, vari
   }
 }
 
-function httpError(status, message) {
-  const err = new Error(message);
-  err.status = status;
-  return err;
+export async function setProductImage(productId, imageUrl, actorId) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const result = await client.query(
+      `UPDATE products SET image_url = $1 WHERE id = $2
+       RETURNING id, name, image_url`,
+      [imageUrl || null, productId]
+    );
+    if (result.rows.length === 0) throw httpError(404, 'Product not found');
+
+    await client.query(
+      `INSERT INTO audit_logs (actor_id, action, entity, entity_id, details)
+       VALUES ($1, 'product_image_updated', 'product', $2, $3)`,
+      [actorId, productId, JSON.stringify({ image_url: imageUrl || null })]
+    );
+
+    await client.query('COMMIT');
+    return result.rows[0];
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 export async function updateVariant(variantId, { price, stockDelta }, actorId) {

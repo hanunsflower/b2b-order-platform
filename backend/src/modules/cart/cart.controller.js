@@ -9,7 +9,6 @@ export async function addItem(req, res) {
   }
 
   try {
-    // Find the buyer's cart, or create it if it doesn't exist yet
     const cart = await pool.query(
       `INSERT INTO carts (buyer_id) VALUES ($1)
        ON CONFLICT (buyer_id) DO UPDATE SET buyer_id = EXCLUDED.buyer_id
@@ -17,7 +16,6 @@ export async function addItem(req, res) {
       [req.user.id]
     );
 
-    // Add the item, or increase the quantity if it's already in the cart
     await pool.query(
       `INSERT INTO cart_items (cart_id, variant_id, quantity)
        VALUES ($1, $2, $3)
@@ -28,7 +26,7 @@ export async function addItem(req, res) {
 
     res.status(201).json({ message: 'Added to cart' });
   } catch (err) {
-    if (err.code === '23503') { // foreign key violation: variant doesn't exist
+    if (err.code === '23503') {
       return res.status(404).json({ error: 'Variant not found' });
     }
     console.error(err);
@@ -39,7 +37,7 @@ export async function addItem(req, res) {
 export async function getCart(req, res) {
   try {
     const result = await pool.query(
-      `SELECT v.id AS variant_id, p.name, v.shade, v.size, v.sku,
+      `SELECT v.id AS variant_id, p.name, p.image_url, v.shade, v.size, v.sku,
               v.price, ci.quantity,
               (v.price * ci.quantity) AS line_total,
               (v.stock_on_hand - v.stock_reserved) AS available

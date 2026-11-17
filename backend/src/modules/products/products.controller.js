@@ -1,52 +1,63 @@
 import pool from '../../db/db.js';
-import { createProductWithVariants, updateVariant } from './products.service.js';
+import {
+  createProductWithVariants,
+  updateVariant,
+  setProductImage,
+} from './products.service.js';
+
+// An image link is optional, but if given it must be a real http(s) URL.
+function validImageUrl(value) {
+  if (value === undefined || value === null || value === '') return true;
+  if (typeof value !== 'string' || value.length > 500) return false;
+  try {
+    const u = new URL(value);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
 
 export async function createProduct(req, res) {
-  const { name, brand, description, variants } = req.body;
+  const { name, variants, imageUrl } = req.body;
 
-  // 1. Validate: name required, variants is a non-empty array,
-  //    each variant has sku, price >= 0, integer stock >= 0 (400 if not)
-  if (!name) {
-    return res.status(400).json({ error: 'Name is required' });
+  if (!name || !Array.isArray(variants) || variants.length === 0) {
+    return res.status(400).json({ error: 'name and at least one variant are required' });
   }
-  if (!Array.isArray(variants) || variants.length === 0) {
-    return res.status(400).json({ error: 'Variants is a required non-empty array' });
+  if (!validImageUrl(imageUrl)) {
+    return res.status(400).json({ error: 'imageUrl must be a valid http or https link (max 500 characters)' });
   }
-  for (const variant of variants) {
-    if (!variant.sku || variant.price < 0 || !Number.isInteger(variant.stock)) {
-      return res.status(400).json({ error: 'Each variant must have a valid SKU, price, and stock' });
+  for (const v of variants) {
+    const priceOk = typeof v.price === 'number' && v.price >= 0;
+    const stockOk = Number.isInteger(v.stock) && v.stock >= 0;
+    if (!v.sku || !priceOk || !stockOk) {
+      return res.status(400).json({
+        error: 'each variant needs sku, numeric price >= 0 and integer stock >= 0',
+      });
     }
   }
 
   try {
-    // 2. Call createProductWithVariants(req.body, req.user.id)
     const product = await createProductWithVariants(req.body, req.user.id);
-    // 3. Send 201 with the product
     res.status(201).json(product);
   } catch (err) {
-    // 4. If err.code === '23505' -> 409 'SKU already exists'
     if (err.code === '23505') {
       return res.status(409).json({ error: 'SKU already exists' });
     }
-    // 5. Otherwise log it and send 500
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
 }
 
 export async function listProducts(req, res) {
-  // Query products JOIN product_variants WHERE is_active = true
-  // Return: product name, brand, sku, shade, size, price,
-  //         (stock_on_hand - stock_reserved) AS available
-  // Send back the rows
-    try {
+  try {
     const result = await pool.query(
-      `SELECT p.name, p.brand,
-       v.id AS variant_id, v.sku, v.shade, v.size, v.price,
-       (v.stock_on_hand - v.stock_reserved) AS available
+      `SELECT p.id AS product_id, p.name, p.brand, p.image_url,
+              v.id AS variant_id, v.sku, v.shade, v.size, v.price,
+              (v.stock_on_hand - v.stock_reserved) AS available
        FROM products p
-       JOIN product_variants v ON p.id = v.product_id
-       WHERE p.is_active = true`
+       JOIN product_variants v ON v.product_id = p.id
+       WHERE p.is_active = true
+       ORDER BY p.name, v.sku`
     );
     res.json(result.rows);
   } catch (err) {
@@ -59,26 +70,43 @@ export async function updateVariantController(req, res) {
   const { variantId } = req.params;
   const { price, stockDelta } = req.body;
 
-  // 1. variantId must be an integer (400)
   if (!Number.isInteger(Number(variantId))) {
-    return res.status(400).json({ error: 'variantId must be an integer' });
+    return res.status(400).json({ error: 'variantId must be a number' });
   }
-  // 2. at least one of price or stockDelta must be provided (400)
-  if (!price && !stockDelta) {
+  if (price === undefined && stockDelta === undefined) {
     return res.status(400).json({ error: 'At least one of price or stockDelta must be provided' });
   }
-  // 3. if price is given: a number >= 0 (400)
   if (price !== undefined && (typeof price !== 'number' || price < 0)) {
-    return res.status(400).json({ error: 'Price must be a number >= 0' });
+    return res.status(400).json({ error: 'price must be a number >= 0' });
   }
-  // 4. if stockDelta is given: an integer (400)
   if (stockDelta !== undefined && !Number.isInteger(stockDelta)) {
-    return res.status(400).json({ error: 'Stock delta must be an integer' });
+    return res.status(400).json({ error: 'stockDelta must be an integer' });
   }
 
   try {
     const variant = await updateVariant(Number(variantId), { price, stockDelta }, req.user.id);
     res.json(variant);
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+export async function updateProductImageController(req, res) {
+  const { productId } = req.params;
+  const { imageUrl } = req.body;
+
+  if (!Number.isInteger(Number(productId))) {
+    return res.status(400).json({ error: 'productId must be a number' });
+  }
+  if (!validImageUrl(imageUrl)) {
+    return res.status(400).json({ error: 'imageUrl must be a valid http or https link (max 500 characters)' });
+  }
+
+  try {
+    const product = await setProductImage(Number(productId), imageUrl, req.user.id);
+    res.json(product);
   } catch (err) {
     if (err.status) return res.status(err.status).json({ error: err.message });
     console.error(err);

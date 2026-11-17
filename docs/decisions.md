@@ -88,10 +88,10 @@
 - **Why:** Any machine can rebuild the same schema with one command, and changes are applied exactly once.
 - **Trade-off:** More files than a single schema.sql, and fixing a mistake means writing a new migration.
 
-## Decision 11: Frontend in Docker later
-- **Decision:** Run the frontend with `npm run dev` during development and add it to docker-compose at the end.
-- **Why:** Fast reloads while building screens; the backend and database already run reproducibly in Docker.
-- **Trade-off:** Until it is added, a mentor needs one extra command to start the frontend.
+## Decision 11 (update): Frontend in Docker
+- **Decision:** The frontend is built into static files and served by nginx on port 5173, as a `web` service in docker-compose.
+- **Why:** `docker compose up --build` now starts the whole system; port 5173 matches the API's CORS rule.
+- **Trade-off:** No hot reload in this mode, so during development I still use `npm run dev` (with the web container stopped).
 
 ## Decision 12: Separate test database
 - **Decision:** Tests run against `orders_test` through a second API instance on port 3001.

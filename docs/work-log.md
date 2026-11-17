@@ -78,3 +78,5 @@ Added a frontend Dockerfile (multi-stage build with nginx) and a web service. Th
 Widened all pages. Added search, brand filter, in-stock filter and sorting on Products, a two-column cart with a sticky summary, and grid layouts for orders and admin pages.
 
 Added product images via image_url (migration 003), placeholder fallback, admin controls, and 3 new tests. Added search, filters and wider layouts earlier today
+
+Implemented variant-level image architecture with COALESCE fallback (Migration 004). Added Demo Admin/Buyer login buttons and seed scripts. Verified clean-machine Docker setup and fixed schema_migrations consistency.

@@ -9,16 +9,19 @@ import {
   FileText,
   History,
   Truck,
-  Sparkles,
-  Droplets,
-  Brush,
+  Star,
 } from "lucide-react";
 import styles from "./Landing.module.css";
+
+// Import your 3 images here
+import hero1 from "../assets/hero-1.avif";
+import hero2 from "../assets/hero-2.avif";
+import hero3 from "../assets/hero-3.avif";
 
 const steps = [
   {
     icon: ClipboardCheck,
-    title: "Register your business",
+    title: "Apply for an account",
     text: "Create an account. Our team reviews and approves every business buyer.",
   },
   {
@@ -94,9 +97,8 @@ export default function Landing() {
             Wholesale cosmetics, ordered the <span>easy way</span>
           </h1>
           <p className={styles.lead}>
-            Salons, pharmacies and beauty shops can browse our full catalog,
-            check live stock, place bulk orders and track them to the door, all
-            in one place.
+            Live stock. Locked-in prices. Fast delivery. The easiest way for
+            salons and pharmacies to stock up on premium beauty products.
           </p>
           <div className={styles.cta}>
             <Link to="/register" className={styles.create}>
@@ -106,17 +108,37 @@ export default function Landing() {
               Sign in
             </Link>
           </div>
+
+          <div className={styles.socialProof}>
+            <div className={styles.stars}>
+              <Star size={16} fill="currentColor" />
+              <Star size={16} fill="currentColor" />
+              <Star size={16} fill="currentColor" />
+              <Star size={16} fill="currentColor" />
+              <Star size={16} fill="currentColor" />
+            </div>
+            {/* UPDATED: Honest copy instead of "50+ salons" */}
+            <p>Built for salons, pharmacies, and beauty shops</p>
+          </div>
         </div>
 
-        <div className={styles.heroArt} aria-hidden="true">
-          <div className={styles.bubble}>
-            <Sparkles size={64} />
+        {/* New Dynamic Collage */}
+        <div className={styles.heroCollage}>
+          <div className={`${styles.collageImg} ${styles.imgMain}`}>
+            <img src={hero1} alt="Cosmetics palette" />
           </div>
-          <div className={`${styles.bubble} ${styles.b2}`}>
-            <Droplets size={50} />
+          <div className={`${styles.collageImg} ${styles.imgTall}`}>
+            <img src={hero2} alt="Makeup brushes" />
           </div>
-          <div className={`${styles.bubble} ${styles.b3}`}>
-            <Brush size={32} />
+          <div className={`${styles.collageImg} ${styles.imgSmall}`}>
+            <img src={hero3} alt="Lipstick" />
+          </div>
+
+          {/* Floating Badge */}
+          <div className={styles.heroBadge}>
+            <Boxes size={18} />
+            {/* UPDATED: Removed "500+" */}
+            <span>Live stock tracking</span>
           </div>
         </div>
       </section>
@@ -149,6 +171,22 @@ export default function Landing() {
               <p>{f.text}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* UPDATED: Honest stats instead of fake numbers */}
+      <section className={styles.stats}>
+        <div>
+          <strong>100%</strong>
+          <span>Wholesale pricing</span>
+        </div>
+        <div>
+          <strong>B2B</strong>
+          <span>Verified buyers only</span>
+        </div>
+        <div>
+          <strong>24/7</strong>
+          <span>Stock visibility</span>
         </div>
       </section>
 

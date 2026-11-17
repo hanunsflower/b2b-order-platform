@@ -3,6 +3,7 @@ import {
   createProductWithVariants,
   updateVariant,
   setProductImage,
+  setVariantImage, // <--- ADDED
 } from './products.service.js';
 
 // An image link is optional, but if given it must be a real http(s) URL.
@@ -51,7 +52,8 @@ export async function createProduct(req, res) {
 export async function listProducts(req, res) {
   try {
     const result = await pool.query(
-      `SELECT p.id AS product_id, p.name, p.brand, p.image_url,
+      `SELECT p.id AS product_id, p.name, p.brand, 
+              COALESCE(v.image_url, p.image_url) AS image_url, -- <--- THE FIX
               v.id AS variant_id, v.sku, v.shade, v.size, v.price,
               (v.stock_on_hand - v.stock_reserved) AS available
        FROM products p
@@ -107,6 +109,28 @@ export async function updateProductImageController(req, res) {
   try {
     const product = await setProductImage(Number(productId), imageUrl, req.user.id);
     res.json(product);
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+// --- NEW CONTROLLER ADDED BELOW ---
+export async function updateVariantImageController(req, res) {
+  const { variantId } = req.params;
+  const { imageUrl } = req.body;
+
+  if (!Number.isInteger(Number(variantId))) {
+    return res.status(400).json({ error: 'variantId must be a number' });
+  }
+  if (!validImageUrl(imageUrl)) {
+    return res.status(400).json({ error: 'imageUrl must be a valid http or https link (max 500 characters)' });
+  }
+
+  try {
+    const variant = await setVariantImage(Number(variantId), imageUrl, req.user.id);
+    res.json(variant);
   } catch (err) {
     if (err.status) return res.status(err.status).json({ error: err.message });
     console.error(err);

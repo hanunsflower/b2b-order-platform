@@ -18,7 +18,7 @@ const emptyForm = {
 export default function AdminProducts() {
   const [items, setItems] = useState([]);
   const [edits, setEdits] = useState({});
-  const [imageEdits, setImageEdits] = useState({}); // { [productId]: "https://..." }
+  const [variantImageEdits, setVariantImageEdits] = useState({}); // <--- RENAMED & keyed by variant_id
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
   const [search, setSearch] = useState("");
@@ -72,16 +72,17 @@ export default function AdminProducts() {
     }
   }
 
-  async function saveImage(productId) {
-    const imageUrl = (imageEdits[productId] || "").trim();
+  // --- UPDATED TO SAVE VARIANT IMAGE ---
+  async function saveImage(variantId) {
+    const imageUrl = (variantImageEdits[variantId] || "").trim();
     const { ok, data } = await api(
       "PATCH",
-      `/api/products/${productId}/image`,
+      `/api/products/variants/${variantId}/image`, // <--- NEW ENDPOINT
       { imageUrl },
     );
     if (ok) {
-      setMessage(`Image saved for ${data.name}`);
-      setImageEdits({ ...imageEdits, [productId]: "" });
+      setMessage(`Image saved for ${data.sku}`);
+      setVariantImageEdits({ ...variantImageEdits, [variantId]: "" });
       loadProducts();
     } else {
       setMessage(data?.error || "Could not save image");
@@ -233,19 +234,20 @@ export default function AdminProducts() {
                   />
                   <button onClick={() => update(it.variant_id)}>Update</button>
 
+                  {/* --- UPDATED IMAGE INPUT AND BUTTON --- */}
                   <input
                     placeholder="New image link"
-                    value={imageEdits[it.product_id] || ""}
+                    value={variantImageEdits[it.variant_id] || ""}
                     onChange={(e) =>
-                      setImageEdits({
-                        ...imageEdits,
-                        [it.product_id]: e.target.value,
+                      setVariantImageEdits({
+                        ...variantImageEdits,
+                        [it.variant_id]: e.target.value,
                       })
                     }
                   />
                   <button
                     className={styles.secondary}
-                    onClick={() => saveImage(it.product_id)}
+                    onClick={() => saveImage(it.variant_id)}
                   >
                     Save image
                   </button>

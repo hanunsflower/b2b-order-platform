@@ -121,7 +121,11 @@ export default function Products() {
               <div key={item.variant_id} className={styles.card}>
                 <div className={styles.imageBox}>
                   <ProductImage
-                    src={item.image_url}
+                    key={item.image_url} // Forces React to update image if shade changes
+                    src={
+                      item.image_url ||
+                      "https://placehold.co/400x300/fff0f6/d6336c?text=No+Image"
+                    } // Fallback for blank images
                     alt={`${item.name} ${item.shade || ""}`}
                   />
                 </div>

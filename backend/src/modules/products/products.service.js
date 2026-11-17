@@ -117,3 +117,32 @@ export async function updateVariant(variantId, { price, stockDelta }, actorId) {
     client.release();
   }
 }
+
+// --- NEW FUNCTION ADDED BELOW ---
+export async function setVariantImage(variantId, imageUrl, actorId) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const result = await client.query(
+      `UPDATE product_variants SET image_url = $1 WHERE id = $2
+       RETURNING id, sku, image_url`,
+      [imageUrl || null, variantId]
+    );
+    if (result.rows.length === 0) throw httpError(404, 'Variant not found');
+
+    await client.query(
+      `INSERT INTO audit_logs (actor_id, action, entity, entity_id, details)
+       VALUES ($1, 'variant_image_updated', 'variant', $2, $3)`,
+      [actorId, variantId, JSON.stringify({ image_url: imageUrl || null })]
+    );
+
+    await client.query('COMMIT');
+    return result.rows[0];
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}

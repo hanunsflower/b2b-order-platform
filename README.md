@@ -50,9 +50,10 @@ Requirements: Docker Desktop. (Node 20 or newer is only needed to run tests.)
    ```bash
    docker compose up --build
    ```
-3. In a second terminal, create the admin account (once):
+3. In a second terminal, seed the database (creates demo users and products):
    ```bash
    docker compose exec api node src/seed-admin.js
+   docker compose exec api node src/seed-catalog.js
    ```
 4. Open http://localhost:5173
 
@@ -62,7 +63,11 @@ Requirements: Docker Desktop. (Node 20 or newer is only needed to run tests.)
 | API | http://localhost:3000 (health check: `/health`) |
 | PostgreSQL | localhost:5432 |
 
-**Admin login (local testing only):** `admin@example.com` / `Admin12345`
+**Demo Credentials (local testing only):**
+- **Admin:** `admin@demo.com` / `demo1234` (or click "Demo Admin" on the login page)
+- **Buyer:** `buyer@demo.com` / `demo1234` (or click "Demo Buyer" on the login page)
+
+> ⚠️ **Limitation:** These demo accounts are for local development and portfolio review only. Never run the `seed-admin.js` or `seed-catalog.js` scripts against a live production server, as they create accounts with a publicly known password.
 
 **First walkthrough:** register a buyer on the Register page, log in as admin
 and approve it under Buyers, create a product under Products, then log in as
@@ -154,7 +159,7 @@ npm run start:test
 npm test
 ```
 
-21 tests cover registration and approval, role access, stock reservation
+24 tests cover registration and approval, role access, stock reservation
 (including two buyers checking out the last unit at the same moment), payment
 verification, rejection and resubmission, duplicate references, cancel, and
 admin stock updates. Output is saved in `docs/test-evidence.txt`.
@@ -188,5 +193,5 @@ admin stock updates. Output is saved in `docs/test-evidence.txt`.
 
 ## Documentation
 
-`docs/requirements.md`, `docs/decisions.md` (12 design decisions with trade-offs),
+`docs/requirements.md`, `docs/decisions.md` (14 design decisions with trade-offs),
 `docs/work-log.md`, `docs/test-evidence.txt`.

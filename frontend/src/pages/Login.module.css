@@ -26,3 +26,72 @@
 }
 
 .footer { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 16px; }
+
+/* --- NEW DEMO SECTION --- */
+.demoSection {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed #e0d0d8;
+  text-align: center;
+}
+
+.demoText {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 12px;
+  font-weight: 500;
+}
+
+.demoBtns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* We use a more specific selector here so your generic button styles don't override them */
+.demoBtns .demoBuyer, 
+.demoBtns .demoAdmin {
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto; /* Overrides the width: 100% from .form button */
+  margin: 0; 
+}
+
+.demoBuyer {
+  background: #ebfbee;
+  color: #2b8a3e;
+  border-color: #c3f0ca;
+}
+.demoBuyer:hover:not(:disabled) {
+  background: #d3f9d8;
+  transform: translateY(-2px);
+}
+
+.demoAdmin {
+  background: #fff0f6;
+  color: var(--primary-dark);
+  border-color: #ffd6e7;
+}
+.demoAdmin:hover:not(:disabled) {
+  background: #ffe3ee;
+  transform: translateY(-2px);
+}
+
+.demoBuyer:disabled, 
+.demoAdmin:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .demoBtns { flex-direction: column; }
+}

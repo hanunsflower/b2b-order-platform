@@ -103,3 +103,9 @@
 - **Why:** Gives a realistic catalog without file upload, storage and size-limit handling.
 - **Trade-off:** Images depend on an external website staying online. File upload to our own storage is a next step.
 - **Security:** The server accepts only http and https links up to 500 characters.
+
+## Decision 14: Variant-level images with product fallback
+- **Decision:** Store an optional `image_url` on `product_variants` (migration 004). The product listing query uses `COALESCE(v.image_url, p.image_url)` so the site shows the shade-specific image if it exists, and falls back to the parent product image if it doesn't.
+- **Why:** A single product can have multiple shades (e.g. Nude Pink and Ruby Red), and buyers need to see the exact shade they are ordering. Storing the image at the variant level makes the catalog more accurate, while the fallback prevents blank images when a specific shade hasn't been photographed yet.
+- **Trade-off:** Updating images is now done per-variant, which means the admin has to update each shade individually if a product has many variants. It relies on the same external-link approach as Decision 13, so the same dependency on external hosting applies.
+- **Security:** The same `validImageUrl` validation is reused — only http/https links up to 500 characters are accepted. The update is restricted to admin users and recorded in `audit_logs` (`variant_image_updated`).

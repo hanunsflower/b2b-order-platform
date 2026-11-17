@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { api } from "../api.js";
 import BuyerNav from "../components/BuyerNav.jsx";
+import ProductImage from "../components/ProductImage.jsx";
 import styles from "./Products.module.css";
 
 export default function Products() {
@@ -118,27 +119,35 @@ export default function Products() {
           <div className={styles.grid}>
             {visible.map((item) => (
               <div key={item.variant_id} className={styles.card}>
-                <p className={styles.name}>{item.name}</p>
-                <p className={styles.meta}>
-                  {item.brand} · {item.shade} · {item.size}
-                </p>
-                <p className={styles.sku}>{item.sku}</p>
-                <p className={styles.price}>
-                  {Number(item.price).toFixed(2)} <small>ETB</small>
-                </p>
-                <span
-                  className={`${styles.stock} ${item.available === 0 ? styles.out : item.available < 5 ? styles.low : ""}`}
-                >
-                  {item.available === 0
-                    ? "Out of stock"
-                    : `${item.available} available`}
-                </span>
-                <button
-                  onClick={() => addToCart(item.variant_id)}
-                  disabled={item.available === 0}
-                >
-                  Add to cart
-                </button>
+                <div className={styles.imageBox}>
+                  <ProductImage
+                    src={item.image_url}
+                    alt={`${item.name} ${item.shade || ""}`}
+                  />
+                </div>
+                <div className={styles.body}>
+                  <p className={styles.name}>{item.name}</p>
+                  <p className={styles.meta}>
+                    {item.brand} · {item.shade} · {item.size}
+                  </p>
+                  <p className={styles.sku}>{item.sku}</p>
+                  <p className={styles.price}>
+                    {Number(item.price).toFixed(2)} <small>ETB</small>
+                  </p>
+                  <span
+                    className={`${styles.stock} ${item.available === 0 ? styles.out : item.available < 5 ? styles.low : ""}`}
+                  >
+                    {item.available === 0
+                      ? "Out of stock"
+                      : `${item.available} available`}
+                  </span>
+                  <button
+                    onClick={() => addToCart(item.variant_id)}
+                    disabled={item.available === 0}
+                  >
+                    Add to cart
+                  </button>
+                </div>
               </div>
             ))}
           </div>

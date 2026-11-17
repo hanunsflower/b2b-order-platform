@@ -76,3 +76,5 @@ Created a separate test database and test API on port 3001. Tests now leave the 
 Added a frontend Dockerfile (multi-stage build with nginx) and a web service. The whole system now starts with one command.
 
 Widened all pages. Added search, brand filter, in-stock filter and sorting on Products, a two-column cart with a sticky summary, and grid layouts for orders and admin pages.
+
+Added product images via image_url (migration 003), placeholder fallback, admin controls, and 3 new tests. Added search, filters and wider layouts earlier today

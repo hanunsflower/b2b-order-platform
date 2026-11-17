@@ -13,7 +13,7 @@
   box-shadow: var(--shadow);
 }
 .sidebar h3 { margin: 0 0 8px; }
-.sidebar select, .sidebar input[type="text"], .searchBox input { width: 100%; margin: 4px 0 12px; }
+.sidebar select, .searchBox input { width: 100%; margin: 4px 0 12px; }
 .label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; }
 
 .searchBox { position: relative; }
@@ -34,12 +34,14 @@
 .card {
   background: var(--card);
   border-radius: var(--radius);
-  padding: 18px;
+  overflow: hidden;
   box-shadow: var(--shadow);
-  border-top: 5px solid var(--primary);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(166, 30, 77, 0.2); }
+
+.imageBox { aspect-ratio: 4 / 3; background: #fff0f6; overflow: hidden; }
+.body { padding: 16px 18px 18px; }
 
 .name { font-family: "Playfair Display", serif; font-size: 1.15rem; font-weight: 700; margin: 0; color: var(--plum); }
 .meta { color: var(--muted); font-size: 0.85rem; margin: 4px 0 0; }
@@ -51,7 +53,7 @@
 .low { background: #fff4e6; color: #e8590c; }
 .out { background: #fff5f5; color: var(--danger); }
 
-.card button { width: 100%; margin: 0; }
+.body button { width: 100%; margin: 0; }
 
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; }

@@ -97,3 +97,9 @@
 - **Decision:** Tests run against `orders_test` through a second API instance on port 3001.
 - **Why:** Tests create products, buyers and orders; keeping them out of the dev database keeps demo data clean.
 - **Trade-off:** Two API instances to start, and the test database is not reset between runs.
+
+## Decision 13: Product images as links
+- **Decision:** Store an optional `image_url` on `products` (migration 003). The admin pastes an image link; the site shows it with a placeholder when missing or broken.
+- **Why:** Gives a realistic catalog without file upload, storage and size-limit handling.
+- **Trade-off:** Images depend on an external website staying online. File upload to our own storage is a next step.
+- **Security:** The server accepts only http and https links up to 500 characters.

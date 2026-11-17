@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { api } from "../api.js";
 import AdminNav from "../components/AdminNav.jsx";
+import ProductImage from "../components/ProductImage.jsx";
 import styles from "./AdminProducts.module.css";
 
 const emptyForm = {
   name: "",
   brand: "",
+  imageUrl: "",
   sku: "",
   shade: "",
   size: "",
@@ -16,6 +18,7 @@ const emptyForm = {
 export default function AdminProducts() {
   const [items, setItems] = useState([]);
   const [edits, setEdits] = useState({});
+  const [imageEdits, setImageEdits] = useState({}); // { [productId]: "https://..." }
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
   const [search, setSearch] = useState("");
@@ -69,6 +72,22 @@ export default function AdminProducts() {
     }
   }
 
+  async function saveImage(productId) {
+    const imageUrl = (imageEdits[productId] || "").trim();
+    const { ok, data } = await api(
+      "PATCH",
+      `/api/products/${productId}/image`,
+      { imageUrl },
+    );
+    if (ok) {
+      setMessage(`Image saved for ${data.name}`);
+      setImageEdits({ ...imageEdits, [productId]: "" });
+      loadProducts();
+    } else {
+      setMessage(data?.error || "Could not save image");
+    }
+  }
+
   async function createProduct(e) {
     e.preventDefault();
     setMessage("");
@@ -76,6 +95,7 @@ export default function AdminProducts() {
     const body = {
       name: form.name,
       brand: form.brand,
+      imageUrl: form.imageUrl.trim(),
       variants: [
         {
           sku: form.sku,
@@ -125,6 +145,11 @@ export default function AdminProducts() {
             placeholder="Brand"
             value={form.brand}
             onChange={(e) => setField("brand", e.target.value)}
+          />
+          <input
+            placeholder="Image link (https://...)"
+            value={form.imageUrl}
+            onChange={(e) => setField("imageUrl", e.target.value)}
           />
           <input
             placeholder="SKU (e.g. FND-BEIGE-30)"
@@ -177,31 +202,54 @@ export default function AdminProducts() {
           <div className={styles.grid}>
             {visible.map((it) => (
               <div key={it.variant_id} className={styles.card}>
-                <p className={styles.name}>{it.name}</p>
-                <p className={styles.sub}>
-                  {it.brand} · {it.shade} · {it.size} · {it.sku}
-                </p>
-                <p className={styles.price}>
-                  {Number(it.price).toFixed(2)} ETB{" "}
-                  <span className={styles.sub}>
-                    · Available: {it.available}
-                  </span>
-                </p>
-                <input
-                  placeholder="New price"
-                  value={edits[it.variant_id]?.price || ""}
-                  onChange={(e) =>
-                    setEdit(it.variant_id, "price", e.target.value)
-                  }
-                />
-                <input
-                  placeholder="Stock change (15 or -2)"
-                  value={edits[it.variant_id]?.delta || ""}
-                  onChange={(e) =>
-                    setEdit(it.variant_id, "delta", e.target.value)
-                  }
-                />
-                <button onClick={() => update(it.variant_id)}>Update</button>
+                <div className={styles.thumb}>
+                  <ProductImage src={it.image_url} alt={it.name} />
+                </div>
+                <div className={styles.info}>
+                  <p className={styles.name}>{it.name}</p>
+                  <p className={styles.sub}>
+                    {it.brand} · {it.shade} · {it.size} · {it.sku}
+                  </p>
+                  <p className={styles.price}>
+                    {Number(it.price).toFixed(2)} ETB{" "}
+                    <span className={styles.sub}>
+                      · Available: {it.available}
+                    </span>
+                  </p>
+
+                  <input
+                    placeholder="New price"
+                    value={edits[it.variant_id]?.price || ""}
+                    onChange={(e) =>
+                      setEdit(it.variant_id, "price", e.target.value)
+                    }
+                  />
+                  <input
+                    placeholder="Stock change (15 or -2)"
+                    value={edits[it.variant_id]?.delta || ""}
+                    onChange={(e) =>
+                      setEdit(it.variant_id, "delta", e.target.value)
+                    }
+                  />
+                  <button onClick={() => update(it.variant_id)}>Update</button>
+
+                  <input
+                    placeholder="New image link"
+                    value={imageEdits[it.product_id] || ""}
+                    onChange={(e) =>
+                      setImageEdits({
+                        ...imageEdits,
+                        [it.product_id]: e.target.value,
+                      })
+                    }
+                  />
+                  <button
+                    className={styles.secondary}
+                    onClick={() => saveImage(it.product_id)}
+                  >
+                    Save image
+                  </button>
+                </div>
               </div>
             ))}
           </div>

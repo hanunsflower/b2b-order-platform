@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api.js";
 import BuyerNav from "../components/BuyerNav.jsx";
+import ProductImage from "../components/ProductImage.jsx";
 import styles from "./Cart.module.css";
 
 export default function Cart() {
@@ -57,7 +58,10 @@ export default function Cart() {
           <section>
             {items.map((i) => (
               <div key={i.variant_id} className={styles.card}>
-                <div>
+                <div className={styles.thumb}>
+                  <ProductImage src={i.image_url} alt={i.name} />
+                </div>
+                <div className={styles.info}>
                   <p className={styles.name}>{i.name}</p>
                   <p className={styles.sub}>
                     {i.shade} · {i.size} · {i.sku}

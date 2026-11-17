@@ -9,11 +9,8 @@ export default function AdminBuyers() {
 
   async function loadBuyers() {
     const response = await api("GET", "/api/admin/buyers?status=pending");
-    if (response.ok) {
-      setBuyers(response.data);
-    } else {
-      setMessage(response.data?.error || "Could not load buyers");
-    }
+    if (response.ok) setBuyers(response.data);
+    else setMessage(response.data?.error || "Could not load buyers");
   }
 
   useEffect(() => {
@@ -22,11 +19,11 @@ export default function AdminBuyers() {
 
   async function review(id, status) {
     const response = await api("PATCH", `/api/admin/buyers/${id}`, { status });
-    if (response.ok) {
-      setMessage(`Buyer ${status}`);
-    } else {
-      setMessage(response.data?.error || "Could not update");
-    }
+    setMessage(
+      response.ok
+        ? `Buyer ${status}`
+        : response.data?.error || "Could not update",
+    );
     loadBuyers();
   }
 
@@ -39,25 +36,26 @@ export default function AdminBuyers() {
         <p className={styles.empty}>No buyers waiting for approval.</p>
       )}
 
-      {buyers.map((b) => (
-        <div key={b.id} className={styles.card}>
-          <p>
-            <strong>{b.business_name}</strong> ({b.email})
-          </p>
-          <button
-            className={styles.approve}
-            onClick={() => review(b.id, "approved")}
-          >
-            Approve
-          </button>
-          <button
-            className={styles.reject}
-            onClick={() => review(b.id, "rejected")}
-          >
-            Reject
-          </button>
-        </div>
-      ))}
+      <div className={styles.grid}>
+        {buyers.map((b) => (
+          <div key={b.id} className={styles.card}>
+            <p className={styles.title}>{b.business_name}</p>
+            <p className={styles.sub}>{b.email}</p>
+            <button
+              className={styles.approve}
+              onClick={() => review(b.id, "approved")}
+            >
+              Approve
+            </button>
+            <button
+              className={styles.reject}
+              onClick={() => review(b.id, "rejected")}
+            >
+              Reject
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

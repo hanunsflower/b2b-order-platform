@@ -1,19 +1,22 @@
-.page { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
-.notice { background: #fff0f6; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 10px; margin: 12px 0; }
-.empty { text-align: center; color: var(--muted); padding: 40px 0; }
+.page { max-width: 1180px; margin: 0 auto; padding: 24px 28px; }
+.notice { background: #fff0f6; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 10px; margin: 14px 0; }
+.empty { text-align: center; color: var(--muted); padding: 50px 0; }
 
-.filter { min-width: 220px; font-weight: 500; }
+.filter { min-width: 240px; font-weight: 500; margin-bottom: 16px; }
 
-.card { background: var(--card); border-radius: var(--radius); padding: 16px 20px; margin-top: 12px; box-shadow: var(--shadow); }
-.card p { margin: 4px 0; }
-.head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-.total { font-weight: 600; color: var(--primary-dark); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+
+.card { background: var(--card); border-radius: var(--radius); padding: 18px 22px; box-shadow: var(--shadow); }
+.head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.id { font-family: "Playfair Display", serif; font-size: 1.15rem; font-weight: 700; margin: 0; }
+.sub { color: var(--muted); font-size: 0.88rem; margin: 4px 0; }
+.total { font-weight: 600; color: var(--primary-dark); margin: 6px 0 10px; }
 
 .badge { font-size: 0.78rem; font-weight: 500; padding: 4px 14px; border-radius: 999px; background: #eee; color: #555; }
+.pending_payment { background: #fff4e6; color: #e8590c; }
+.payment_submitted { background: #e7f5ff; color: #1971c2; }
 .payment_verified { background: #ebfbee; color: var(--ok); }
+.payment_rejected { background: #fff5f5; color: var(--danger); }
 .ready_for_pickup, .out_for_delivery { background: #f3f0ff; color: var(--accent); }
 .completed { background: #d3f9d8; color: #2b8a3e; }
 .cancelled { background: #f1f3f5; color: #868e96; }
-.pending_payment { background: #fff4e6; color: #e8590c; }
-.payment_submitted { background: #e7f5ff; color: #1971c2; }
-.payment_rejected { background: #fff5f5; color: var(--danger); }

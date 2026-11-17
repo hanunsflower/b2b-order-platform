@@ -15,17 +15,15 @@ const emptyForm = {
 
 export default function AdminProducts() {
   const [items, setItems] = useState([]);
-  const [edits, setEdits] = useState({}); // { [variantId]: { price: "", delta: "" } }
+  const [edits, setEdits] = useState({});
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
+  const [search, setSearch] = useState("");
 
   async function loadProducts() {
     const { ok, data } = await api("GET", "/api/products");
-    if (ok) {
-      setItems(data);
-    } else {
-      setMessage(data?.error || "Could not load products");
-    }
+    if (ok) setItems(data);
+    else setMessage(data?.error || "Could not load products");
   }
 
   useEffect(() => {
@@ -99,89 +97,116 @@ export default function AdminProducts() {
     }
   }
 
+  const q = search.trim().toLowerCase();
+  const visible = items.filter(
+    (i) =>
+      !q ||
+      [i.name, i.shade, i.sku, i.brand].some((v) =>
+        v?.toLowerCase().includes(q),
+      ),
+  );
+
   return (
     <div className={styles.page}>
       <AdminNav />
       <h1>Products and stock</h1>
       {message && <p className={styles.notice}>{message}</p>}
 
-      <form className={styles.createForm} onSubmit={createProduct}>
-        <h3>Create a product</h3>
-        <input
-          placeholder="Name"
-          value={form.name}
-          onChange={(e) => setField("name", e.target.value)}
-          required
-        />
-        <input
-          placeholder="Brand"
-          value={form.brand}
-          onChange={(e) => setField("brand", e.target.value)}
-        />
-        <input
-          placeholder="SKU (e.g. FND-BEIGE-30)"
-          value={form.sku}
-          onChange={(e) => setField("sku", e.target.value)}
-          required
-        />
-        <input
-          placeholder="Shade"
-          value={form.shade}
-          onChange={(e) => setField("shade", e.target.value)}
-        />
-        <input
-          placeholder="Size"
-          value={form.size}
-          onChange={(e) => setField("size", e.target.value)}
-        />
-        <input
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="Price"
-          value={form.price}
-          onChange={(e) => setField("price", e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          min="0"
-          step="1"
-          placeholder="Stock"
-          value={form.stock}
-          onChange={(e) => setField("stock", e.target.value)}
-          required
-        />
-        <button type="submit">Create</button>
-      </form>
-
-      {items.length === 0 && <p className={styles.empty}>No products yet.</p>}
-
-      {items.map((it) => (
-        <div key={it.variant_id} className={styles.card}>
-          <p className={styles.name}>
-            {it.name} ({it.shade}, {it.size}) — {it.sku}
-          </p>
-          <p className={styles.sub}>
-            Price:{" "}
-            <span className={styles.price}>
-              {Number(it.price).toFixed(2)} ETB
-            </span>{" "}
-            · Available: {it.available}
-          </p>
+      <div className={styles.layout}>
+        <form onSubmit={createProduct} className={styles.createForm}>
+          <h3>Create a product</h3>
           <input
-            placeholder="New price"
-            value={edits[it.variant_id]?.price || ""}
-            onChange={(e) => setEdit(it.variant_id, "price", e.target.value)}
+            placeholder="Name"
+            value={form.name}
+            onChange={(e) => setField("name", e.target.value)}
+            required
           />
           <input
-            placeholder="Stock change (e.g. 15 or -2)"
-            value={edits[it.variant_id]?.delta || ""}
-            onChange={(e) => setEdit(it.variant_id, "delta", e.target.value)}
+            placeholder="Brand"
+            value={form.brand}
+            onChange={(e) => setField("brand", e.target.value)}
           />
-          <button onClick={() => update(it.variant_id)}>Update</button>
-        </div>
-      ))}
+          <input
+            placeholder="SKU (e.g. FND-BEIGE-30)"
+            value={form.sku}
+            onChange={(e) => setField("sku", e.target.value)}
+            required
+          />
+          <input
+            placeholder="Shade"
+            value={form.shade}
+            onChange={(e) => setField("shade", e.target.value)}
+          />
+          <input
+            placeholder="Size"
+            value={form.size}
+            onChange={(e) => setField("size", e.target.value)}
+          />
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Price"
+            value={form.price}
+            onChange={(e) => setField("price", e.target.value)}
+            required
+          />
+          <input
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Stock"
+            value={form.stock}
+            onChange={(e) => setField("stock", e.target.value)}
+            required
+          />
+          <button type="submit">Create</button>
+        </form>
+
+        <section>
+          <input
+            className={styles.search}
+            placeholder="Search by name, shade, SKU or brand"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {visible.length === 0 && (
+            <p className={styles.empty}>No products found.</p>
+          )}
+
+          <div className={styles.grid}>
+            {visible.map((it) => (
+              <div key={it.variant_id} className={styles.card}>
+                <p className={styles.name}>{it.name}</p>
+                <p className={styles.sub}>
+                  {it.brand} · {it.shade} · {it.size} · {it.sku}
+                </p>
+                <p className={styles.price}>
+                  {Number(it.price).toFixed(2)} ETB{" "}
+                  <span className={styles.sub}>
+                    · Available: {it.available}
+                  </span>
+                </p>
+                <input
+                  placeholder="New price"
+                  value={edits[it.variant_id]?.price || ""}
+                  onChange={(e) =>
+                    setEdit(it.variant_id, "price", e.target.value)
+                  }
+                />
+                <input
+                  placeholder="Stock change (15 or -2)"
+                  value={edits[it.variant_id]?.delta || ""}
+                  onChange={(e) =>
+                    setEdit(it.variant_id, "delta", e.target.value)
+                  }
+                />
+                <button onClick={() => update(it.variant_id)}>Update</button>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

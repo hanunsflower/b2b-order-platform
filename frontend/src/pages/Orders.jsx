@@ -5,17 +5,14 @@ import styles from "./Orders.module.css";
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
-  const [refs, setRefs] = useState({}); // payment reference typed per order id
+  const [refs, setRefs] = useState({});
   const [invoice, setInvoice] = useState(null);
   const [message, setMessage] = useState("");
 
   async function loadOrders() {
     const { ok, data } = await api("GET", "/api/orders");
-    if (ok) {
-      setOrders(data);
-    } else {
-      setMessage(data?.error || "Could not load orders");
-    }
+    if (ok) setOrders(data);
+    else setMessage(data?.error || "Could not load orders");
   }
 
   useEffect(() => {
@@ -40,11 +37,8 @@ export default function Orders() {
   async function viewInvoice(orderId) {
     setMessage("");
     const { ok, data } = await api("GET", `/api/orders/${orderId}/invoice`);
-    if (ok) {
-      setInvoice(data);
-    } else {
-      setMessage(data?.error || "Invoice not available");
-    }
+    if (ok) setInvoice(data);
+    else setMessage(data?.error || "Invoice not available");
   }
 
   const canPay = (s) => s === "pending_payment" || s === "payment_rejected";
@@ -79,47 +73,49 @@ export default function Orders() {
         </div>
       )}
 
-      {orders.length === 0 && <p>No orders yet.</p>}
+      {orders.length === 0 && <p className={styles.empty}>No orders yet.</p>}
 
-      {orders.map((o) => (
-        <div key={o.id} className={styles.card}>
-          <div className={styles.head}>
-            <p className={styles.id}>Order #{o.id}</p>
-            <span className={`${styles.badge} ${styles[o.status] || ""}`}>
-              {o.status}
-            </span>
-          </div>
-          <p className={styles.sub}>
-            {o.fulfillment_method}
-            {o.delivery_address ? `: ${o.delivery_address}` : ""}
-          </p>
-          <p className={styles.total}>
-            Total: {Number(o.total).toFixed(2)} ETB
-          </p>
-
-          {canPay(o.status) && (
-            <div className={styles.payRow}>
-              <input
-                placeholder="Payment reference (e.g. CBE123456)"
-                value={refs[o.id] || ""}
-                onChange={(e) => setRefs({ ...refs, [o.id]: e.target.value })}
-              />
-              <button onClick={() => submitPayment(o.id)}>
-                Submit payment
-              </button>
-              <button
-                className={styles.cancel}
-                onClick={() => cancelOrder(o.id)}
-              >
-                Cancel order
-              </button>
+      <div className={styles.grid}>
+        {orders.map((o) => (
+          <div key={o.id} className={styles.card}>
+            <div className={styles.head}>
+              <p className={styles.id}>Order #{o.id}</p>
+              <span className={`${styles.badge} ${styles[o.status] || ""}`}>
+                {o.status}
+              </span>
             </div>
-          )}
-          {hasInvoice(o.status) && (
-            <button onClick={() => viewInvoice(o.id)}>View invoice</button>
-          )}
-        </div>
-      ))}
+            <p className={styles.sub}>
+              {o.fulfillment_method}
+              {o.delivery_address ? `: ${o.delivery_address}` : ""}
+            </p>
+            <p className={styles.total}>
+              Total: {Number(o.total).toFixed(2)} ETB
+            </p>
+
+            {canPay(o.status) && (
+              <div className={styles.payRow}>
+                <input
+                  placeholder="Payment reference (e.g. CBE123456)"
+                  value={refs[o.id] || ""}
+                  onChange={(e) => setRefs({ ...refs, [o.id]: e.target.value })}
+                />
+                <button onClick={() => submitPayment(o.id)}>
+                  Submit payment
+                </button>
+                <button
+                  className={styles.cancel}
+                  onClick={() => cancelOrder(o.id)}
+                >
+                  Cancel order
+                </button>
+              </div>
+            )}
+            {hasInvoice(o.status) && (
+              <button onClick={() => viewInvoice(o.id)}>View invoice</button>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -74,3 +74,5 @@ Styled all pages with CSS modules and a shared index.css.
 Created a separate test database and test API on port 3001. Tests now leave the dev catalog untouched.
 
 Added a frontend Dockerfile (multi-stage build with nginx) and a web service. The whole system now starts with one command.
+
+Widened all pages. Added search, brand filter, in-stock filter and sorting on Products, a two-column cart with a sticky summary, and grid layouts for orders and admin pages.

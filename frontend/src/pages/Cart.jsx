@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api.js";
 import BuyerNav from "../components/BuyerNav.jsx";
 import styles from "./Cart.module.css";
@@ -13,11 +13,8 @@ export default function Cart() {
 
   async function loadCart() {
     const { ok, data } = await api("GET", "/api/cart");
-    if (ok) {
-      setItems(data);
-    } else {
-      setMessage(data?.error || "Could not load cart");
-    }
+    if (ok) setItems(data);
+    else setMessage(data?.error || "Could not load cart");
   }
 
   useEffect(() => {
@@ -32,85 +29,102 @@ export default function Cart() {
   async function checkout() {
     setMessage("");
     const body = { fulfillmentMethod: method };
-    if (method === "delivery") {
-      body.deliveryAddress = address;
-    }
+    if (method === "delivery") body.deliveryAddress = address;
     const { ok, data } = await api("POST", "/api/orders", body);
-    if (ok) {
-      navigate("/orders");
-    } else {
-      setMessage(data?.error || "Checkout failed");
-    }
+    if (ok) navigate("/orders");
+    else setMessage(data?.error || "Checkout failed");
   }
 
   // the total is calculated from the items (Decision 5), not stored
   const total = items.reduce((sum, i) => sum + Number(i.line_total), 0);
+  const units = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
     <div className={styles.page}>
       <BuyerNav />
       <h1>Your cart</h1>
       {message && <p className={styles.notice}>{message}</p>}
-      {items.length === 0 && (
-        <p className={styles.empty}>Your cart is empty.</p>
-      )}
 
-      {items.map((i) => (
-        <div key={i.variant_id} className={styles.card}>
-          <div>
-            <p className={styles.name}>{i.name}</p>
-            <p className={styles.sub}>
-              {i.shade} · {i.size} · Available: {i.available}
-            </p>
-          </div>
-          <div>
-            <p className={styles.line}>
-              {Number(i.price).toFixed(2)} ETB × {i.quantity} ={" "}
-              {Number(i.line_total).toFixed(2)} ETB
-            </p>
-            <button
-              className={styles.remove}
-              onClick={() => removeItem(i.variant_id)}
-            >
-              Remove
-            </button>
-          </div>
+      {items.length === 0 ? (
+        <div className={styles.emptyBox}>
+          <p>Your cart is empty.</p>
+          <Link to="/products" className={styles.shop}>
+            Browse products
+          </Link>
         </div>
-      ))}
+      ) : (
+        <div className={styles.layout}>
+          <section>
+            {items.map((i) => (
+              <div key={i.variant_id} className={styles.card}>
+                <div>
+                  <p className={styles.name}>{i.name}</p>
+                  <p className={styles.sub}>
+                    {i.shade} · {i.size} · {i.sku}
+                  </p>
+                  <p className={styles.sub}>Available: {i.available}</p>
+                </div>
+                <div className={styles.right}>
+                  <p className={styles.sub}>
+                    {Number(i.price).toFixed(2)} ETB × {i.quantity}
+                  </p>
+                  <p className={styles.line}>
+                    {Number(i.line_total).toFixed(2)} ETB
+                  </p>
+                  <button
+                    className={styles.remove}
+                    onClick={() => removeItem(i.variant_id)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </section>
 
-      {items.length > 0 && (
-        <div className={styles.summary}>
-          <h3 className={styles.total}>Total: {total.toFixed(2)} ETB</h3>
+          <aside className={styles.summary}>
+            <h3>Order summary</h3>
+            <p className={styles.row}>
+              <span>Items</span>
+              <span>{units}</span>
+            </p>
+            <p className={styles.total}>
+              <span>Total</span>
+              <span>{total.toFixed(2)} ETB</span>
+            </p>
 
-          <div className={styles.options}>
-            <label className={styles.option}>
+            <div className={styles.options}>
+              <label className={styles.option}>
+                <input
+                  type="radio"
+                  checked={method === "pickup"}
+                  onChange={() => setMethod("pickup")}
+                />
+                Pickup
+              </label>
+              <label className={styles.option}>
+                <input
+                  type="radio"
+                  checked={method === "delivery"}
+                  onChange={() => setMethod("delivery")}
+                />
+                Delivery
+              </label>
+            </div>
+
+            {method === "delivery" && (
               <input
-                type="radio"
-                checked={method === "pickup"}
-                onChange={() => setMethod("pickup")}
+                className={styles.address}
+                placeholder="Delivery address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
               />
-              Pickup
-            </label>
-            <label className={styles.option}>
-              <input
-                type="radio"
-                checked={method === "delivery"}
-                onChange={() => setMethod("delivery")}
-              />
-              Delivery
-            </label>
-          </div>
+            )}
 
-          {method === "delivery" && (
-            <input
-              className={styles.address}
-              placeholder="Delivery address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
-          )}
-
-          <button onClick={checkout}>Place order</button>
+            <button className={styles.place} onClick={checkout}>
+              Place order
+            </button>
+          </aside>
         </div>
       )}
     </div>

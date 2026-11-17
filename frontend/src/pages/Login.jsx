@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api.js";
+import AuthLayout from "../components/AuthLayout.jsx";
 import styles from "./Login.module.css";
 
 export default function Login() {
@@ -26,28 +27,33 @@ export default function Login() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <p className={styles.brand}>💄 GLOW WHOLESALE</p>
-      <h1 className={styles.title}>Welcome back</h1>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      {error && <p className={styles.error}>{error}</p>}
-      <button type="submit">Log in</button>
-      <p className={styles.footer}>
-        New business? <Link to="/register">Register</Link>
-      </p>
-    </form>
+    <AuthLayout>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <Link to="/" className={styles.back}>
+          ← Back to home
+        </Link>
+        <h1 className={styles.title}>Welcome back</h1>
+        <p className={styles.sub}>Sign in to your wholesale account.</p>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <p className={styles.error}>{error}</p>}
+        <button type="submit">Log in</button>
+        <p className={styles.footer}>
+          New business? <Link to="/register">Create account</Link>
+        </p>
+      </form>
+    </AuthLayout>
   );
 }

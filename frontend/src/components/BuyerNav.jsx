@@ -12,7 +12,7 @@ export default function BuyerNav() {
   }
   return (
     <nav className={styles.nav}>
-      <span className={styles.brand}>💄 Glow Wholesale</span>
+      <span className={styles.brand}>Glow Wholesale</span>
       <NavLink to="/products" className={cls}>
         Products
       </NavLink>

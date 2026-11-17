@@ -3,7 +3,6 @@ import { api } from "../api.js";
 import AdminNav from "../components/AdminNav.jsx";
 import styles from "./AdminOrders.module.css";
 
-// Which status button to show for an order: depends on its current status and method.
 function nextStatus(order) {
   if (order.status === "payment_verified") {
     return order.fulfillment_method === "pickup"
@@ -16,7 +15,7 @@ function nextStatus(order) {
   ) {
     return "completed";
   }
-  return null; // nothing to do for other statuses
+  return null;
 }
 
 export default function AdminOrders() {
@@ -29,16 +28,13 @@ export default function AdminOrders() {
       ? `/api/admin/orders?status=${filter}`
       : "/api/admin/orders";
     const { ok, data } = await api("GET", path);
-    if (ok) {
-      setOrders(data);
-    } else {
-      setMessage(data?.error || "Could not load orders");
-    }
+    if (ok) setOrders(data);
+    else setMessage(data?.error || "Could not load orders");
   }
 
   useEffect(() => {
     loadOrders();
-  }, [filter]); // reload whenever the filter changes
+  }, [filter]);
 
   async function move(orderId, status) {
     const { ok, data } = await api(
@@ -65,6 +61,7 @@ export default function AdminOrders() {
         onChange={(e) => setFilter(e.target.value)}
       >
         <option value="">All</option>
+        <option value="payment_submitted">Payment submitted</option>
         <option value="payment_verified">Payment verified</option>
         <option value="ready_for_pickup">Ready for pickup</option>
         <option value="out_for_delivery">Out for delivery</option>
@@ -77,30 +74,32 @@ export default function AdminOrders() {
         <p className={styles.empty}>No orders for this filter.</p>
       )}
 
-      {orders.map((o) => {
-        const next = nextStatus(o);
-        return (
-          <div key={o.id} className={styles.card}>
-            <div className={styles.head}>
-              <p>Order #{o.id}</p>
-              <span className={`${styles.badge} ${styles[o.status] || ""}`}>
-                {o.status}
-              </span>
+      <div className={styles.grid}>
+        {orders.map((o) => {
+          const next = nextStatus(o);
+          return (
+            <div key={o.id} className={styles.card}>
+              <div className={styles.head}>
+                <p className={styles.id}>Order #{o.id}</p>
+                <span className={`${styles.badge} ${styles[o.status] || ""}`}>
+                  {o.status}
+                </span>
+              </div>
+              <p className={styles.sub}>{o.business_name}</p>
+              <p className={styles.sub}>
+                {o.fulfillment_method}
+                {o.delivery_address ? `: ${o.delivery_address}` : ""}
+              </p>
+              <p className={styles.total}>
+                Total: {Number(o.total).toFixed(2)} ETB
+              </p>
+              {next && (
+                <button onClick={() => move(o.id, next)}>Mark as {next}</button>
+              )}
             </div>
-            <p>{o.business_name}</p>
-            <p>
-              {o.fulfillment_method}
-              {o.delivery_address ? `: ${o.delivery_address}` : ""}
-            </p>
-            <p className={styles.total}>
-              Total: {Number(o.total).toFixed(2)} ETB
-            </p>
-            {next && (
-              <button onClick={() => move(o.id, next)}>Mark as {next}</button>
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

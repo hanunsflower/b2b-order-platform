@@ -9,11 +9,8 @@ export default function AdminPayments() {
 
   async function loadPayments() {
     const response = await api("GET", "/api/admin/payments?status=submitted");
-    if (response.ok) {
-      setPayments(response.data);
-    } else {
-      setMessage(response.data?.error || "Could not load payments");
-    }
+    if (response.ok) setPayments(response.data);
+    else setMessage(response.data?.error || "Could not load payments");
   }
 
   useEffect(() => {
@@ -24,11 +21,11 @@ export default function AdminPayments() {
     const response = await api("PATCH", `/api/admin/payments/${paymentId}`, {
       status,
     });
-    if (response.ok) {
-      setMessage(`Payment ${status}`);
-    } else {
-      setMessage(response.data?.error || "Could not update");
-    }
+    setMessage(
+      response.ok
+        ? `Payment ${status}`
+        : response.data?.error || "Could not update",
+    );
     loadPayments();
   }
 
@@ -41,27 +38,31 @@ export default function AdminPayments() {
         <p className={styles.empty}>No payments waiting for review.</p>
       )}
 
-      {payments.map((p) => (
-        <div key={p.id} className={styles.card}>
-          <p>
-            <strong>Order #{p.order_id}</strong> - reference{" "}
-            <code>{p.reference_number}</code>
-          </p>
-          <p>Submitted: {new Date(p.submitted_at).toLocaleString()}</p>
-          <button
-            className={styles.approve}
-            onClick={() => review(p.id, "verified")}
-          >
-            Verify
-          </button>
-          <button
-            className={styles.reject}
-            onClick={() => review(p.id, "rejected")}
-          >
-            Reject
-          </button>
-        </div>
-      ))}
+      <div className={styles.grid}>
+        {payments.map((p) => (
+          <div key={p.id} className={styles.card}>
+            <p className={styles.title}>Order #{p.order_id}</p>
+            <p className={styles.sub}>
+              Reference: <code>{p.reference_number}</code>
+            </p>
+            <p className={styles.sub}>
+              Submitted: {new Date(p.submitted_at).toLocaleString()}
+            </p>
+            <button
+              className={styles.approve}
+              onClick={() => review(p.id, "verified")}
+            >
+              Verify
+            </button>
+            <button
+              className={styles.reject}
+              onClick={() => review(p.id, "rejected")}
+            >
+              Reject
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

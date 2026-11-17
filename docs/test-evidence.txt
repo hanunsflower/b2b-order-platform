@@ -1,0 +1,43 @@
+
+> backend@1.0.0 test
+> node --env-file=.env --env-file=.env.test --test
+
+▶ Role-based access
+  [32m✔ rejects a request with no token (401) [90m(9.4702ms)[39m[39m
+  [32m✔ blocks a buyer from admin routes (403) [90m(7.0402ms)[39m[39m
+  [32m✔ blocks an admin from the cart (403) [90m(107.0692ms)[39m[39m
+  [32m✔ accepts a valid buyer token on a buyer route (200) [90m(706.3734ms)[39m[39m
+[32m✔ Role-based access [90m(4549.9255ms)[39m[39m
+▶ Buyer registration and approval
+  [32m✔ registers a new buyer as pending [90m(762.169ms)[39m[39m
+  [32m✔ rejects a duplicate email [90m(400.2068ms)[39m[39m
+  [32m✔ blocks login before approval [90m(195.8483ms)[39m[39m
+  [32m✔ rejects a wrong password with 401 [90m(1194.3644ms)[39m[39m
+  [32m✔ lets the admin approve the buyer [90m(18.1962ms)[39m[39m
+  [32m✔ allows login after approval [90m(1309.2275ms)[39m[39m
+[32m✔ Buyer registration and approval [90m(5007.5297ms)[39m[39m
+▶ Payments, verification and cancel
+  [32m✔ reserves stock at checkout [90m(4049.008ms)[39m[39m
+  [32m✔ verification deducts on_hand and releases the reservation [90m(936.1371ms)[39m[39m
+  [32m✔ rejection keeps the reservation and the buyer can resubmit [90m(756.2901ms)[39m[39m
+  [32m✔ refuses a payment reference that was already used (409) [90m(1166.5288ms)[39m[39m
+  [32m✔ cancel releases the reservation, and a second cancel is refused (409) [90m(473.1275ms)[39m[39m
+  [32m✔ another buyer cannot pay for or cancel someone else's order (404) [90m(880.9905ms)[39m[39m
+  [32m✔ cannot cancel while a payment is waiting for review (409) [90m(547.137ms)[39m[39m
+[32m✔ Payments, verification and cancel [90m(10002.933ms)[39m[39m
+▶ Stock reservation
+  [32m✔ blocks ordering more than the available stock (409) [90m(2409.6191ms)[39m[39m
+  [32m✔ lets only one of two simultaneous buyers get the last unit [90m(2348.5129ms)[39m[39m
+[32m✔ Stock reservation [90m(6018.6213ms)[39m[39m
+▶ Admin variant updates
+  [32m✔ stockDelta raises on_hand [90m(1716.9904ms)[39m[39m
+  [32m✔ cannot reduce stock below the reserved amount (409) [90m(2391.042ms)[39m[39m
+[32m✔ Admin variant updates [90m(5962.3006ms)[39m[39m
+[34mℹ tests 21[39m
+[34mℹ suites 5[39m
+[34mℹ pass 21[39m
+[34mℹ fail 0[39m
+[34mℹ cancelled 0[39m
+[34mℹ skipped 0[39m
+[34mℹ todo 0[39m
+[34mℹ duration_ms 10601.9519[39m

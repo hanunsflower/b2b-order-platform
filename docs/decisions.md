@@ -92,3 +92,8 @@
 - **Decision:** Run the frontend with `npm run dev` during development and add it to docker-compose at the end.
 - **Why:** Fast reloads while building screens; the backend and database already run reproducibly in Docker.
 - **Trade-off:** Until it is added, a mentor needs one extra command to start the frontend.
+
+## Decision 12: Separate test database
+- **Decision:** Tests run against `orders_test` through a second API instance on port 3001.
+- **Why:** Tests create products, buyers and orders; keeping them out of the dev database keeps demo data clean.
+- **Trade-off:** Two API instances to start, and the test database is not reset between runs.

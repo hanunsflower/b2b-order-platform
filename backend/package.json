@@ -5,10 +5,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node --env-file=.env --watch src/server.js",
-    "test": "node --env-file=.env --test",
-    "migrate": "node --env-file=.env src/migrate.js"
-  },
+  "dev": "node --env-file=.env --watch src/server.js",
+  "migrate": "node --env-file=.env src/migrate.js",
+  "migrate:test": "node --env-file=.env --env-file=.env.test src/migrate.js",
+  "seed:test": "node --env-file=.env --env-file=.env.test src/seed-admin.js",
+  "start:test": "node --env-file=.env --env-file=.env.test src/server.js",
+  "test": "node --env-file=.env --env-file=.env.test --test"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",

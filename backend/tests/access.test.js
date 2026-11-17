@@ -1,6 +1,6 @@
 import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { api, loginAdmin, loginBuyer } from './helpers.js';
+import { api, loginAdmin, createApprovedBuyer } from './helpers.js';
 
 describe('Role-based access', () => {
   let adminToken;
@@ -8,7 +8,7 @@ describe('Role-based access', () => {
 
   before(async () => {
     adminToken = await loginAdmin();
-    buyerToken = await loginBuyer();
+    buyerToken = await createApprovedBuyer(adminToken, 'access');
   });
 
   it('rejects a request with no token (401)', async () => {

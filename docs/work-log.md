@@ -66,3 +66,9 @@ Built the register page. Tested duplicate email, short password, and the pending
 Built the admin products and stock screen (price update, stock +/-). Tested the reserved-stock rule (409) from the browser.
 
 Added the create-product form to the admin products page. Learned that number inputs still return strings, so the body converts them with Number().
+
+Nov 17, Day 4
+
+Styled all pages with CSS modules and a shared index.css.
+
+Created a separate test database and test API on port 3001. Tests now leave the dev catalog untouched.
